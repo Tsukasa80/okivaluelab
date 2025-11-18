@@ -1,2 +1,8 @@
 /app/public/wp-config.php
 /app/public/wp-content/uploads/
+/.chat-context.md
+/conf/
+/AGENTS.md
+/logs/
+/tools/
+/.vscode/
