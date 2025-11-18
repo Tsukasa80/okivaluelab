@@ -1,0 +1,75 @@
+<?php
+
+/**
+ * Plugin Name: OVL Member Gate Shortcode
+ * Description: [member_gate] 会員限定案内。?redirect_to= を検証してボタン生成。
+ */
+if ( ! defined('ABSPATH') ) exit;
+
+add_shortcode('member_gate', function () {
+  // 取得 & 検証（外部URLは弾いてホームにフォールバック）
+  $raw = isset($_GET['redirect_to']) ? $_GET['redirect_to'] : '';
+  $redirect_to = wp_validate_redirect( $raw, home_url('/') );
+
+  // ログイン済なら即リダイレクト（ゲートで足止めしない）
+  if ( is_user_logged_in() && $redirect_to ) {
+    wp_safe_redirect( $redirect_to );
+    exit;
+  }
+
+  // ログイン/登録 URL
+  $login_url  = ovl_login_url($redirect_to);
+  $signup_url = ovl_register_url($redirect_to);
+
+  // このページだけ noindex
+  add_action('wp_head', function () {
+    echo '<meta name="robots" content="noindex, nofollow" />' . "\n";
+  }, 1);
+
+  ob_start(); ?>
+  <main class="ovl-gate">
+    <section class="ovl-gate__panel" role="dialog" aria-labelledby="ovlGateTitle" aria-describedby="ovlGateDesc">
+      <h1 id="ovlGateTitle" class="ovl-gate__title">このコンテンツは会員限定です</h1>
+      <p id="ovlGateDesc" class="ovl-gate__lead">
+        下のボタンから<strong>ログイン</strong>、または<strong>新規登録</strong>にお進みください。<br>
+        認証後は目的のページへ自動で戻ります。
+      </p>
+      <?php if ( $redirect_to ): ?>
+        <p class="ovl-gate__target"><span>対象ページ：</span><?php echo esc_html( $redirect_to ); ?></p>
+      <?php endif; ?>
+      <div class="ovl-gate__actions">
+        <a class="ovl-btn ovl-btn--primary" href="<?php echo esc_url($login_url); ?>" rel="nofollow">ログインする</a>
+        <a class="ovl-btn ovl-btn--ghost" href="<?php echo esc_url($signup_url); ?>" rel="nofollow">新規登録へ</a>
+      </div>
+      <p class="ovl-gate__notes">
+        ※ 会員登録は無料です（所要約1〜2分）。<br>
+        ※ お困りの際は <a href="<?php echo esc_url( home_url('/contact/') ); ?>">お問い合わせ</a> へ。
+      </p>
+    </section>
+  </main>
+
+  <style>
+  .ovl-gate { display:flex; align-items:center; justify-content:center; padding:4rem 1rem; }
+  .ovl-gate__panel { max-width:720px; width:100%; background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:2rem; box-shadow:0 6px 24px rgba(0,0,0,.06); }
+  .ovl-gate__title { font-size:1.5rem; margin:0 0 .75rem; }
+  .ovl-gate__lead { color:#374151; line-height:1.7; margin:0 0 1rem; }
+  .ovl-gate__target { background:#f9fafb; border:1px dashed #e5e7eb; border-radius:10px; padding:.75rem 1rem; margin:0 0 1.25rem; font-size:.9rem; color:#4b5563; }
+  .ovl-gate__target span { color:#6b7280; margin-right:.25rem; }
+  .ovl-gate__actions { display:flex; gap:.75rem; flex-wrap:wrap; margin:0 0 1rem; }
+  .ovl-btn { display:inline-flex; align-items:center; justify-content:center; padding:.8rem 1.1rem; border-radius:10px; text-decoration:none; border:1px solid transparent; font-weight:600; }
+  .ovl-btn--primary { background:#111827; color:#fff; }
+  .ovl-btn--primary:hover { opacity:.9; }
+  .ovl-btn--ghost { background:#fff; color:#111827; border-color:#d1d5db; }
+  .ovl-btn--ghost:hover { background:#f3f4f6; }
+  .ovl-gate__notes { font-size:.85rem; color:#6b7280; line-height:1.7; }
+  @media (prefers-color-scheme: dark) {
+    .ovl-gate__panel { background:#0b0b0c; border-color:#1f2937; }
+    .ovl-gate__lead, .ovl-gate__notes, .ovl-gate__target { color:#cbd5e1; }
+    .ovl-btn--primary { background:#2563eb; }
+    .ovl-btn--ghost { color:#e5e7eb; border-color:#374151; }
+    .ovl-gate__target { background:#0f172a; border-color:#1f2937; }
+  }
+  </style>
+  <?php
+  return ob_get_clean();
+});

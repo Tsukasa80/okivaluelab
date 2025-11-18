@@ -1,0 +1,28 @@
+<!-- wp:group {"tagName":"header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<header class="wp-block-group">
+
+  <!-- ロゴ -->
+  <!-- wp:site-title {"level":2,"isLink":true} /-->
+
+  <!-- ナビ（ゲスト用） -->
+  <!-- wp:navigation {"ariaLabel":"Primary Navigation (Guest)","layout":{"type":"flex","justifyContent":"right","flexWrap":"wrap"}} -->
+    <!-- wp:navigation-link {"label":"物件一覧","url":"/property_list/"} /-->
+    <!-- wp:navigation-link {"label":"相談","url":"/consult/"} /-->
+    <!-- wp:navigation-link {"label":"ログイン","url":"/members/"} /-->
+    <!-- wp:navigation-link {"label":"新規登録","url":"/member-register/"} /-->
+  <!-- /wp:navigation -->
+
+  <!-- CTA（ゲスト向け） -->
+  <!-- wp:buttons -->
+    <!-- wp:button {"className":"is-style-fill"} -->
+      <a class="wp-block-button__link" href="/member-register/" aria-label="会員登録へ">会員登録</a>
+    <!-- /wp:button -->
+    <!-- wp:button {"className":"is-style-outline"} -->
+      <a class="wp-block-button__link" href="/members/" aria-label="ログインへ">ログイン</a>
+    <!-- /wp:button -->
+  <!-- /wp:buttons -->
+
+</header>
+<!-- /wp:group -->
+
+<!-- ★Block Visibility 設定ガイド：このテンプレ全体を「未ログインの時のみ表示」に設定 -->

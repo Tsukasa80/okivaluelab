@@ -1,0 +1,4 @@
+Deny from all
+# Nginx equivalent:
+# location /protected/ { internal; alias /full/path/to/private/docs/; }
+# PHP handler should use `header('X-Accel-Redirect: /protected/'.$basename);`

@@ -1,0 +1,5 @@
+2025-11-07T04:58:16+00:00 [OVL:docs] doc delete request received {"post_id":141,"user_id":1,"referer":"https:\/\/okivaluelab.local\/wp-admin\/post.php?post=141&action=edit","has_post":true}
+2025-11-07T04:58:16+00:00 [OVL:docs] doc delete nonce verified {"post_id":141}
+2025-11-07T04:58:16+00:00 [OVL:docs] doc delete cleared storage {"post_id":141}
+2025-11-07T04:58:16+00:00 [OVL:docs] allowing empty doc value via force clear {"post_id":141,"user_id":1}
+2025-11-07T04:58:16+00:00 [OVL:docs] doc delete update_field executed {"post_id":141}

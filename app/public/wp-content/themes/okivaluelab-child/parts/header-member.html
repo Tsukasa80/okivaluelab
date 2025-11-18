@@ -1,0 +1,32 @@
+<!-- wp:group {"tagName":"header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<header class="wp-block-group">
+
+  <!-- ロゴ（Hello, ユーザー名） -->
+  <!-- wp:group {"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group">
+    <!-- wp:site-title {"level":2,"isLink":true} /-->
+    <!-- wp:paragraph -->
+    <p class="screen-reader-text">会員ナビゲーション</p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- ナビ（member向け） -->
+  <!-- wp:navigation {"ariaLabel":"Primary Navigation (Member)","layout":{"type":"flex","justifyContent":"right","flexWrap":"wrap"}} -->
+    <!-- wp:navigation-link {"label":"物件一覧","url":"/property_list/"} /-->
+    <!-- wp:navigation-link {"label":"会員トップ","url":"/members/"} /-->
+    <!-- wp:navigation-link {"label":"相談","url":"/consult/"} /-->
+    <!-- wp:navigation-link {"label":"ログアウト","url":"/wp-login.php?action=logout"} /-->
+  <!-- /wp:navigation -->
+
+  <!-- CTA（member向け） -->
+  <!-- wp:buttons -->
+    <!-- wp:button {"className":"is-style-outline"} -->
+      <a class="wp-block-button__link" href="/members/" aria-label="会員トップへ">会員トップ</a>
+    <!-- /wp:button -->
+  <!-- /wp:buttons -->
+
+</header>
+<!-- /wp:group -->
+
+<!-- ★Block Visibility 設定ガイド：このテンプレ全体を「ログイン済み & role=member の時のみ表示」に設定 -->

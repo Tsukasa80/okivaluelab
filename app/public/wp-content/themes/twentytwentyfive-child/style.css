@@ -1,0 +1,20 @@
+/*
+ Theme Name: Twenty Twenty-Five Child
+ Template: twentytwentyfive
+ Version: 1.0
+*/
+
+.property-archive-grid {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+.property-card {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: .8rem;
+  background: #fff;
+}
+.property-thumb img { width: 100%; height: auto; display: block; border-radius: 8px; }
+.price { font-weight: 600; margin-top: .4rem; }
+.price.is-obfuscated { color: #888; font-weight: 500; }

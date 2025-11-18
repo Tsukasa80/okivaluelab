@@ -1,0 +1,99 @@
+# Translation of Plugins - Block Visibility — Conditional Visibility Control for the Block Editor - Stable (latest release) in Japanese
+# This file is distributed under the same license as the Plugins - Block Visibility — Conditional Visibility Control for the Block Editor - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-03-28 14:45:02+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ja_JP\n"
+"Project-Id-Version: Plugins - Block Visibility — Conditional Visibility Control for the Block Editor - Stable (latest release)\n"
+
+#: includes/rest-api/controllers/class-block-visibility-rest-variables-controller.php:62
+msgid "Search term."
+msgstr "タームを検索する。"
+
+#: includes/rest-api/controllers/class-block-visibility-rest-variables-controller.php:67
+msgid "Saved values."
+msgstr "値を保存する。"
+
+#: includes/presets/register-presets.php:19
+msgid "Preset"
+msgstr "プリセット"
+
+#: includes/presets/register-presets.php:18 build/block-visibility-editor.js:7
+msgid "Presets"
+msgstr "プリセット"
+
+#. translators: %1$s star rating.
+#: includes/admin/settings.php:129
+msgid "Thank you for using Block Visibility. Please rate the plugin %1$s on %2$sWordPress.org%3$s to help us spread the word."
+msgstr "Block Visibility をご利用いただきありがとうございます。%2$sWordPress.org%3$s のプラグイン %1$s を評価して、知名度を上げるのを手伝ってください。"
+
+#: includes/utils/user-functions.php:53
+msgid "None (Logged-out users)"
+msgstr "なし (ログアウト済ユーザー)"
+
+#: includes/admin/plugin-action-links.php:55
+msgid "Navigate to the Block Visibility Getting Started page."
+msgstr "Block Visibility の「始めましょう」ページに移動します。"
+
+#: includes/admin/plugin-action-links.php:29
+msgid "Navigate to the Block Visibility settings."
+msgstr "Block Visibility の「設定」に移動します。"
+
+#: includes/rest-api/controllers/class-block-visibility-rest-settings-controller.php:95
+msgid "Something went wrong, the settings could not be updated."
+msgstr "エラーが発生したため、設定を更新できませんでした。"
+
+#: includes/rest-api/controllers/class-block-visibility-rest-settings-controller.php:75
+msgid "Something went wrong, the visibility settings could not be found."
+msgstr "エラーが発生しました。表示設定が見つかりませんでした。"
+
+#: includes/register-settings.php:379
+msgid "Settings for the Block Visibility plugin."
+msgstr "Block Visibility プラグインの設定です。"
+
+#. Plugin URI of the plugin
+#: block-visibility.php
+msgid "https://www.blockvisibilitywp.com/"
+msgstr "https://www.blockvisibilitywp.com/"
+
+#. Description of the plugin
+#: block-visibility.php
+msgid "Provides visibility controls and scheduling functionality to all WordPress blocks."
+msgstr "すべての WordPress ブロックに可視性コントロールとスケジュール機能を提供します。"
+
+#. Author URI of the plugin
+#: block-visibility.php
+msgid "https://www.nickdiego.com"
+msgstr "https://www.nickdiego.com"
+
+#: includes/admin/plugin-action-links.php:30
+msgid "Settings"
+msgstr "設定"
+
+#: includes/admin/plugin-action-links.php:60
+msgid "Leave a Review"
+msgstr "レビューを残す"
+
+#. Author of the plugin
+#: block-visibility.php
+msgid "Nick Diego"
+msgstr "Nick Diego"
+
+#. Plugin Name of the plugin
+#: block-visibility.php includes/admin/settings.php:31
+#: includes/admin/settings.php:32 build/block-visibility-settings.js:1
+msgid "Block Visibility"
+msgstr "Block Visibility"
+
+#: includes/admin/plugin-action-links.php:59
+msgid "Review Block Visibility on WordPress.org"
+msgstr "WordPress.org 上の Block Visibilityへのレビュー"
+
+#: includes/admin/plugin-action-links.php:56
+msgid "Getting Started"
+msgstr "始めましょう"

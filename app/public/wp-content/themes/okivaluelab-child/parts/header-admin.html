@@ -1,0 +1,26 @@
+<!-- wp:group {"tagName":"header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<header class="wp-block-group">
+
+  <!-- ロゴ -->
+  <!-- wp:site-title {"level":2,"isLink":true} /-->
+
+  <!-- ナビ（admin向け） -->
+  <!-- wp:navigation {"ariaLabel":"Primary Navigation (Admin)","layout":{"type":"flex","justifyContent":"right","flexWrap":"wrap"}} -->
+    <!-- wp:navigation-link {"label":"物件一覧","url":"/property_list/"} /-->
+    <!-- wp:navigation-link {"label":"会員トップ","url":"/members/"} /-->
+    <!-- wp:navigation-link {"label":"相談","url":"/consult/"} /-->
+    <!-- wp:navigation-link {"label":"ダッシュボード","url":"/wp-admin/"} /-->
+    <!-- wp:navigation-link {"label":"ログアウト","url":"/wp-login.php?action=logout"} /-->
+  <!-- /wp:navigation -->
+
+  <!-- CTA（admin向け。ダッシュボード直行） -->
+  <!-- wp:buttons -->
+    <!-- wp:button {"className":"is-style-fill"} -->
+      <a class="wp-block-button__link" href="/wp-admin/" aria-label="ダッシュボードへ">WP管理</a>
+    <!-- /wp:button -->
+  <!-- /wp:buttons -->
+
+</header>
+<!-- /wp:group -->
+
+<!-- ★Block Visibility 設定ガイド：このテンプレ全体を「ログイン済み & role=administrator の時のみ表示」に設定 -->

@@ -1,0 +1,20 @@
+<!-- wp:group {"layout":{"type":"constrained"}} -->
+<div class="wp-block-group">
+
+  <!-- header（ゲスト/会員/管理者の順に設置） -->
+  <!-- wp:template-part {"slug":"header-admin","area":"header"} /-->
+  <!-- wp:template-part {"slug":"header-member","area":"header"} /-->
+  <!-- wp:template-part {"slug":"header-guest","area":"header"} /-->
+
+  <!-- メイン -->
+  <!-- wp:group {"tagName":"main","style":{"spacing":{"margin":{"top":"0"}}}} -->
+  <main class="wp-block-group" style="margin-top:0">
+    <!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+  </main>
+  <!-- /wp:group -->
+
+  <!-- フッター（親を流用するなら slug:"footer" でOK） -->
+  <!-- wp:template-part {"slug":"footer","area":"footer"} /-->
+
+</div>
+<!-- /wp:group -->

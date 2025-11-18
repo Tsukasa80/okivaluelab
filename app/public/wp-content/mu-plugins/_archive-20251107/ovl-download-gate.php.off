@@ -1,0 +1,379 @@
+<?php
+/**
+ * Plugin Name: OVL Download Gate
+ * Description: Member-only download URL generator, shortcode, and logging hook.
+ */
+
+declare(strict_types=1);
+
+if (!defined('ABSPATH')) {
+	exit;
+}
+
+/**
+ * Return the absolute base path where protected documents live.
+ */
+function ovl_docs_base_dir(): string {
+	return trailingslashit(ABSPATH . 'private/docs');
+}
+
+/**
+ * Return the directory reserved for a specific post's documents.
+ */
+function ovl_post_docs_dir(int $post_id): string {
+	return trailingslashit(ovl_docs_base_dir() . $post_id);
+}
+
+/**
+ * Ensure the per-post directory exists.
+ */
+function ovl_ensure_post_docs_dir(int $post_id): string {
+	$dir = ovl_post_docs_dir($post_id);
+	wp_mkdir_p($dir);
+	return $dir;
+}
+
+/**
+ * Remove all files within the per-post directory.
+ */
+function ovl_clear_post_docs(int $post_id): void {
+	$dir = ovl_post_docs_dir($post_id);
+	if (!is_dir($dir)) {
+		return;
+	}
+	$files = array_diff(scandir($dir), ['.', '..']);
+	foreach ($files as $file) {
+		$path = $dir . $file;
+		if (is_file($path)) {
+			@unlink($path);
+		}
+	}
+}
+
+/**
+ * Persist the doc_url meta via ACF when available.
+ */
+function ovl_update_doc_meta(int $post_id, string $basename): void {
+	if (function_exists('get_field_object')) {
+		$field = get_field_object('doc_url', $post_id, false, false);
+		if ($field && isset($field['key'])) {
+			update_post_meta($post_id, $field['key'], $basename);
+		}
+	}
+
+	update_post_meta($post_id, 'doc_url', $basename);
+}
+
+/**
+ * Resolve the stored document basename for a property.
+ *
+ * @param int $post_id Property post ID.
+ * @return string
+ */
+function ovl_get_doc_basename(int $post_id): string {
+	$post_id = absint($post_id);
+	if ($post_id <= 0) {
+		return '';
+	}
+
+	$doc_value = '';
+	if (function_exists('get_field')) {
+		$doc_value = get_field('doc_url', $post_id);
+	} else {
+		$doc_value = get_post_meta($post_id, 'doc_url', true);
+	}
+
+	if (empty($doc_value)) {
+		// Fallback: look for an existing file within the post-specific directory.
+		$dir = ovl_post_docs_dir($post_id);
+		if (is_dir($dir)) {
+			$files = array_values(array_diff(scandir($dir), ['.', '..']));
+			if (!empty($files)) {
+				$doc_value = $files[0];
+				ovl_update_doc_meta($post_id, $doc_value);
+				// error_log('[OVL] Fallback doc_url from post dir for post ' . $post_id . ': ' . $doc_value);
+			} else {
+				// error_log('[OVL] Fallback post dir empty for post ' . $post_id);
+			}
+		} else {
+			// error_log('[OVL] Fallback post dir missing for post ' . $post_id . ': ' . $dir);
+		}
+
+		if ($doc_value === '' && is_dir(ovl_docs_base_dir())) {
+			$legacy = array_values(array_diff(scandir(ovl_docs_base_dir()), ['.', '..']));
+			if (!empty($legacy)) {
+				$doc_value = $legacy[0];
+				ovl_update_doc_meta($post_id, $doc_value);
+				// error_log('[OVL] Fallback doc_url from legacy dir for post ' . $post_id . ': ' . $doc_value);
+			} else {
+				// error_log('[OVL] Legacy dir empty for post ' . $post_id);
+			}
+		} elseif ($doc_value === '') {
+			// error_log('[OVL] Legacy dir missing for post ' . $post_id);
+		}
+
+		if ($doc_value === '') {
+			// error_log('[OVL] No fallback doc found for post ' . $post_id);
+			return '';
+		}
+	}
+
+	// If the field is still using ACF's array/ID format, normalize it.
+	if (is_array($doc_value)) {
+		if (isset($doc_value['filename'])) {
+			$doc_value = $doc_value['filename'];
+		} elseif (isset($doc_value['url'])) {
+			$doc_value = basename((string) $doc_value['url']);
+		} elseif (isset($doc_value['ID'])) {
+			$doc_value = basename((string) get_post_meta((int) $doc_value['ID'], '_wp_attached_file', true));
+		} else {
+			$doc_value = '';
+		}
+	} elseif (is_numeric($doc_value)) {
+		$doc_value = basename((string) get_post_meta((int) $doc_value, '_wp_attached_file', true));
+	}
+
+	$doc_value = trim((string) $doc_value);
+	if ($doc_value === '') {
+		// error_log('[OVL] doc_url empty after normalization for post ' . $post_id);
+		return '';
+	}
+
+	// ACF field keeps basename only. Full paths are intentionally disallowed.
+	$basename = basename($doc_value);
+	if ($basename !== $doc_value || $basename === '') {
+		// error_log('[OVL] doc_url basename mismatch for post ' . $post_id . ' value=' . $doc_value);
+		return '';
+	}
+
+	if (!preg_match('/^[\p{L}\p{N}._-]+$/u', $basename)) {
+		// error_log('[OVL] doc_url invalid characters: ' . $basename . ' post=' . $post_id);
+		return '';
+	}
+
+	return $basename;
+}
+
+/**
+ * Retrieve the secure download URL for a property document.
+ *
+ * @param int $post_id Property post ID.
+ * @return string Download URL or empty string when unavailable.
+ */
+function ovl_get_download_url(int $post_id): string {
+	$basename = ovl_get_doc_basename($post_id);
+	if ($basename === '') {
+		return '';
+	}
+
+	$nonce = wp_create_nonce("ovl_download_{$post_id}");
+	// To enforce shorter validity windows, append a five-minute HMAC token here in the future.
+
+	$query_args = [
+		'file'  => $basename,
+		'post'  => $post_id,
+		'nonce' => $nonce,
+	];
+
+	return add_query_arg($query_args, home_url('/download.php'));
+}
+
+/**
+ * Shortcode handler that renders the download button or guest prompt.
+ */
+function ovl_render_download_button_shortcode(array $atts = []): string {
+	$defaults = [
+		'post_id' => 0,
+		'label'   => __('資料をダウンロード', 'ovl'),
+	];
+	$atts = shortcode_atts($defaults, $atts, 'ovl_download_button');
+
+	$post_id = $atts['post_id'] ? absint($atts['post_id']) : get_the_ID();
+	if (!$post_id) {
+		return '';
+	}
+
+	if (!is_user_logged_in()) {
+        $login_url = ovl_login_url(get_permalink($post_id));
+		return sprintf(
+			'<a class="ovl-download-login" rel="nofollow noopener" href="%1$s">%2$s</a>',
+			esc_url($login_url),
+			esc_html__('会員登録すると資料DL可', 'ovl')
+		);
+	}
+
+	$basename = ovl_get_doc_basename($post_id);
+	if ($basename === '') {
+		return '';
+	}
+
+	$download_url = ovl_get_download_url($post_id);
+	if ($download_url === '') {
+		// error_log('[OVL] No download URL for post ' . $post_id);
+		return '';
+	}
+
+	/**
+	 * Filter the CSS classes applied to the download button anchor element.
+	 */
+	$button_class = apply_filters('ovl_download_button_class', 'ovl-download-button');
+
+	return sprintf(
+		'<a class="%1$s" rel="nofollow noopener" download="%4$s" href="%2$s">%3$s</a>',
+		esc_attr($button_class),
+		esc_url($download_url),
+		esc_html($atts['label']),
+		esc_attr($basename)
+	);
+}
+add_shortcode('ovl_download_button', 'ovl_render_download_button_shortcode');
+
+/**
+ * Handle uploads for doc_url so that files are stored under private/docs/{post}/.
+ *
+ * @param mixed       $value   Value about to be saved.
+ * @param int         $post_id Post ID.
+ * @return string Sanitized basename or empty string.
+ */
+function ovl_handle_doc_upload($value, int $post_id, array $field, $original) {
+	if (empty($value)) {
+		if (!empty($original)) {
+			// Keep previously stored value when no new file is provided.
+			if (is_string($original)) {
+				return basename(trim($original));
+			}
+			if (is_array($original) && isset($original['filename'])) {
+				return basename((string) $original['filename']);
+			}
+		}
+
+		ovl_clear_post_docs($post_id);
+		return '';
+	}
+
+	// Support file array output.
+	if (is_array($value)) {
+		if (isset($value['ID'])) {
+			$value = (int) $value['ID'];
+		} elseif (isset($value['url'])) {
+			$value = (string) $value['url'];
+		} else {
+			return '';
+		}
+	}
+
+	// Attachment ID.
+	if (is_numeric($value)) {
+		$attachment_id = (int) $value;
+		$file_path     = get_attached_file($attachment_id);
+
+		if (!$file_path || !file_exists($file_path)) {
+			return '';
+		}
+
+		$basename    = sanitize_file_name(basename($file_path));
+		$target_dir  = ovl_ensure_post_docs_dir($post_id);
+		$unique_name = wp_unique_filename($target_dir, $basename);
+		$target_path = $target_dir . $unique_name;
+
+		if (!@copy($file_path, $target_path)) {
+			return '';
+		}
+
+		// Remove older files, keep the freshly copied one.
+		$keep = $unique_name;
+		$files = array_diff(scandir($target_dir), ['.', '..', $keep]);
+		foreach ($files as $file) {
+			$existing = $target_dir . $file;
+			if (is_file($existing)) {
+				@unlink($existing);
+			}
+		}
+
+		// Remove the original attachment to avoid public access.
+		wp_delete_attachment($attachment_id, true);
+
+		ovl_update_doc_meta($post_id, $unique_name);
+
+		return $unique_name;
+	}
+
+	// URL string. Attempt to resolve to local path.
+	if (is_string($value) && strpos($value, '://') !== false) {
+		$parsed = wp_parse_url($value, PHP_URL_PATH);
+		if ($parsed) {
+			$uploads = wp_get_upload_dir();
+			if (isset($uploads['baseurl'], $uploads['basedir']) && strpos($value, $uploads['baseurl']) === 0) {
+				$relative   = ltrim(str_replace($uploads['baseurl'], '', $value), '/');
+				$source_path = trailingslashit($uploads['basedir']) . $relative;
+				if (file_exists($source_path)) {
+					$basename    = sanitize_file_name(basename($source_path));
+					$target_dir  = ovl_ensure_post_docs_dir($post_id);
+					$unique_name = wp_unique_filename($target_dir, $basename);
+					$target_path = $target_dir . $unique_name;
+
+					if (@copy($source_path, $target_path)) {
+						// Cleanup other files but keep current.
+						$files = array_diff(scandir($target_dir), ['.', '..', $unique_name]);
+						foreach ($files as $file) {
+							$existing = $target_dir . $file;
+							if (is_file($existing)) {
+								@unlink($existing);
+							}
+						}
+
+						@unlink($source_path);
+						ovl_update_doc_meta($post_id, $unique_name);
+						return $unique_name;
+					}
+				}
+			}
+		}
+		return '';
+	}
+
+	// Already a basename string (legacy).
+	if (is_string($value)) {
+		$value = trim($value);
+		return basename($value);
+	}
+
+	return '';
+}
+add_filter('acf/update_value/name=doc_url', 'ovl_handle_doc_upload', 10, 4);
+
+/**
+ * Hook that fires when a download is logged. Writes to debug.log for now.
+ */
+function ovl_log_download_event(int $user_id, int $post_id, string $file_name): void {
+	$line = sprintf('[DL] user=%d post=%d file=%s', $user_id, $post_id, $file_name);
+	error_log($line); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+
+	// Example payload for future Make (Integromat) webhook integration.
+	/*
+	$payload = [
+		'user_id'  => $user_id,
+		'post_id'  => $post_id,
+		'file'     => $file_name,
+		'event_at' => current_time('mysql', true),
+	];
+	ovl_send_dl_log_to_webhook($payload);
+	*/
+}
+add_action('ovl/download_logged', 'ovl_log_download_event', 10, 3);
+
+/**
+ * Send the download log payload to an external webhook.
+ *
+ * Currently unused. Configure the endpoint and authentication before enabling.
+ *
+ * @param array<string,mixed> $payload Data describing the download event.
+ */
+function ovl_send_dl_log_to_webhook(array $payload): void {
+	// Example implementation:
+	// wp_remote_post('https://example.com/webhook', [
+	// 	'headers' => ['Content-Type' => 'application/json'],
+	// 	'body'    => wp_json_encode($payload),
+	// 	'timeout' => 5,
+	// ]);
+}

@@ -1,0 +1,30 @@
+<!-- wp:template-part {"slug":"header-admin","area":"header"} /-->
+<!-- wp:template-part {"slug":"header-member","area":"header"} /-->
+<!-- wp:template-part {"slug":"header-guest","area":"header"} /-->
+
+<!-- wp:group {"tagName":"main"} -->
+<main class="wp-block-group">
+  <!-- wp:heading {"level":1} -->物件一覧<!-- /wp:heading -->
+
+  <!-- wp:query {"query":{"postType":"property","perPage":12,"order":"desc","orderBy":"date"}} -->
+  <div class="wp-block-query">
+    <!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
+      <!-- wp:group {"className":"property-card"} -->
+      <div class="wp-block-group property-card">
+        <!-- wp:post-featured-image {"sizeSlug":"medium","isLink":true} /-->
+        <!-- wp:post-title {"level":3,"isLink":true} /-->
+      </div>
+      <!-- /wp:group -->
+    <!-- /wp:post-template -->
+
+    <!-- wp:query-pagination -->
+      <!-- wp:query-pagination-previous /-->
+      <!-- wp:query-pagination-numbers /-->
+      <!-- wp:query-pagination-next /-->
+    <!-- /wp:query-pagination -->
+  </div>
+  <!-- /wp:query -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer"} /-->

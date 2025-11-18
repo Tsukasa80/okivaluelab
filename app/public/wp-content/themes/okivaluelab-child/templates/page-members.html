@@ -1,0 +1,33 @@
+<!--
+  Title: Members Login
+  Slug: page-members
+  Template Types: page
+  Description: 会員ログインページの専用テンプレート。
+-->
+
+<!-- wp:template-part {"slug":"header-admin","area":"header"} /-->
+<!-- wp:template-part {"slug":"header-member","area":"header"} /-->
+<!-- wp:template-part {"slug":"header-guest","area":"header"} /-->
+
+<!-- wp:group {"tagName":"main","style":{"spacing":{"margin":{"top":"0"}}}} -->
+<main class="wp-block-group" style="margin-top:0">
+  <!-- wp:group {"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group">
+    <!-- wp:heading {"level":1} -->
+    <h1 class="wp-block-heading">会員ログイン</h1>
+    <!-- /wp:heading -->
+
+    <!-- wp:paragraph -->
+    <p>ご登録済みのメールアドレスとパスワードでログインしてください。ログイン後は自動的に元のページへ戻ります。</p>
+    <!-- /wp:paragraph -->
+
+    <!-- wp:shortcode -->
+    [wpmem_form login]
+    <!-- /wp:shortcode -->
+  </div>
+  <!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer"} /-->
