@@ -10,8 +10,19 @@ class LogController extends Controller
     public function get(Logger $logger)
     {
         try {
+            $attributes = $this->request->all();
+            
+            $sanitizeMap = [
+                'form_id'  => 'intval',
+                'page'     => 'intval',
+                'per_page' => 'intval',
+                'search'   => 'sanitize_text_field',
+                'log_type' => 'sanitize_text_field',
+            ];
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+            
             return $this->sendSuccess(
-                $logger->get($this->request->all())
+                $logger->get($attributes)
             );
         } catch (Exception $e) {
             return $this->sendError([
@@ -24,8 +35,15 @@ class LogController extends Controller
     public function getFilters(Logger $logger)
     {
         try {
+            $attributes = $this->request->all();
+            
+            $sanitizeMap = [
+                'form_id' => 'intval',
+            ];
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+            
             return $this->sendSuccess(
-                $logger->getFilters($this->request->all())
+                $logger->getFilters($attributes)
             );
         } catch (Exception $e) {
             return $this->sendError([
@@ -38,8 +56,15 @@ class LogController extends Controller
     public function remove(Logger $logger)
     {
         try {
+            $attributes = $this->request->all();
+            
+            $sanitizeMap = [
+                'log_id' => 'intval',
+            ];
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+            
             return $this->sendSuccess(
-                $logger->remove($this->request->all())
+                $logger->remove($attributes)
             );
         } catch (Exception $e) {
             return $this->sendError([

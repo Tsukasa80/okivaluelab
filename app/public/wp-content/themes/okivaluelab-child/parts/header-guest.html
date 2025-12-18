@@ -1,0 +1,23 @@
+<!-- wp:group {"tagName":"header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<header class="wp-block-group site-header">
+
+  <!-- ロゴ -->
+  <!-- wp:site-title {"level":2,"isLink":true} /-->
+
+  <!-- ナビ（ゲスト用） -->
+  <!-- wp:group {"className":"header-nav-auth","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
+  <div class="wp-block-group header-nav-auth">
+    <!-- wp:navigation {"ariaLabel":"Primary Navigation (Guest)","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"}} -->
+    <!-- wp:navigation-link {"label":"トップ","url":"/"} /-->
+    <!-- wp:navigation-link {"label":"限定物件","url":"/property_list/"} /-->
+    <!-- wp:navigation-link {"label":"質問する","url":"/consult/"} /-->
+    <!-- wp:navigation-link {"label":"会員登録","url":"/member-register/"} /-->
+    <!-- wp:navigation-link {"label":"ログイン","url":"/members/"} /-->
+    <!-- /wp:navigation -->
+  </div>
+  <!-- /wp:group -->
+
+</header>
+<!-- /wp:group -->
+
+<!-- ★Block Visibility 設定ガイド：このテンプレ全体を「未ログインの時のみ表示」に設定 -->

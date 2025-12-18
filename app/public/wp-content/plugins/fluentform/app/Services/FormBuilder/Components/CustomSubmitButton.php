@@ -206,13 +206,13 @@ class CustomSubmitButton extends BaseFieldManager
         if (isset($data['settings']['button_ui'])) {
             if ('default' == $data['settings']['button_ui']['type']) {
                 $buttonText = $data['settings']['button_ui']['text'];
-                $html .= '<button ' . $atts . ' aria-label="' . esc_attr($buttonText) . '">' . fluentform_sanitize_html($buttonText) . '</button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $atts is escaped before being passed in.
+                $html .= '<button ' . $atts . ' aria-label="' . esc_attr($this->removeShortcode($buttonText)) . '">' . fluentform_sanitize_html($buttonText) . '</button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $atts is escaped before being passed in.
             } else {
                 $html .= "<button class='ff-btn-submit' type='submit' aria-label='Submit The Form'><img style='max-width: 200px;' src='" . esc_url($data['settings']['button_ui']['img_url']) . "' alt='Submit Form'></button>";
             }
         } else {
             $buttonText = $data['settings']['btn_text'];
-            $html .= '<button ' . $atts . ' aria-label="' . esc_attr($buttonText) . '">' . fluentform_sanitize_html($buttonText) . '</button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $atts is escaped before being passed in.
+            $html .= '<button ' . $atts . ' aria-label="' . esc_attr($this->removeShortcode($buttonText)) . '">' . fluentform_sanitize_html($buttonText) . '</button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $atts is escaped before being passed in.
         }
 
         if ($styles) {

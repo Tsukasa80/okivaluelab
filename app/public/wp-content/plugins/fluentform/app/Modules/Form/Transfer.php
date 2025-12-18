@@ -51,7 +51,7 @@ class Transfer
             $forms[] = $form;
         }
 
-        $fileName = 'fluentform-export-forms-' . count($forms) . '-' . gmdate('d-m-Y') . '.json';
+        $fileName = 'fluentform-export-forms-' . count($forms) . '-' . date('d-m-Y') . '.json';
 
         header('Content-disposition: attachment; filename=' . $fileName);
 

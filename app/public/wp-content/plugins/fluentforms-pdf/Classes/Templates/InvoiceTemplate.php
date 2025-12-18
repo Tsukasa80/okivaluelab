@@ -35,44 +35,44 @@ class InvoiceTemplate extends TemplateManager
         return array(
             [
                 'key' => 'logo',
-                'label' => __('Business Logo', 'fluentform-pdf'),
-                'tips' => __('Your Business Logo which will be shown in the invoice header', 'fluentform-pdf'),
+                'label' => __('Business Logo', 'fluentforms-pdf'),
+                'tips' => __('Your Business Logo which will be shown in the invoice header', 'fluentforms-pdf'),
                 'component' => 'image_widget'
             ],
             [
                 'key' => 'customer_name',
-                'label' => __('Customer Name', 'fluentform-pdf'),
-                'tips' => __('Please select the customer name field from the smartcode dropdown', 'fluentform-pdf'),
+                'label' => __('Customer Name', 'fluentforms-pdf'),
+                'tips' => __('Please select the customer name field from the smartcode dropdown', 'fluentforms-pdf'),
                 'component' => 'value_text'
             ],
             [
                 'key' => 'customer_email',
-                'label' => __('Customer Email', 'fluentform-pdf'),
-                'tips' => __('Please select the customer email field from the smartcode dropdown', 'fluentform-pdf'),
+                'label' => __('Customer Email', 'fluentforms-pdf'),
+                'tips' => __('Please select the customer email field from the smartcode dropdown', 'fluentforms-pdf'),
                 'component' => 'value_text'
             ],
             [
                 'key' => 'customer_address',
-                'label' => __('Customer Address', 'fluentform-pdf'),
-                'tips' => __('Please select the customer address field from the smartcode dropdown', 'fluentform-pdf'),
+                'label' => __('Customer Address', 'fluentforms-pdf'),
+                'tips' => __('Please select the customer address field from the smartcode dropdown', 'fluentforms-pdf'),
                 'component' => 'value_text'
             ],
             [
                 'key' => 'invoice_prefix',
-                'label' => __('Invoice Prefix', 'fluentform-pdf'),
-                'tips' => __('Add your invoice prefix which will be prepended with the invoice number', 'fluentform-pdf'),
+                'label' => __('Invoice Prefix', 'fluentforms-pdf'),
+                'tips' => __('Add your invoice prefix which will be prepended with the invoice number', 'fluentforms-pdf'),
                 'component' => 'value_text'
             ],
             [
                 'key' => 'invoice_upper_text',
-                'label' => __('Invoice Body Text', 'fluentform-pdf'),
-                'tips' => __('Write Invoice body text. This will show before the invoice items', 'fluentform-pdf'),
+                'label' => __('Invoice Body Text', 'fluentforms-pdf'),
+                'tips' => __('Write Invoice body text. This will show before the invoice items', 'fluentforms-pdf'),
                 'component' => 'wp-editor'
             ],
             [
                 'key' => 'invoice_thanks',
-                'label' => __('Invoice Footer Text', 'fluentform-pdf'),
-                'tips' => __('Write Invoice Footer Text. This will show at the end of the invoice', 'fluentform-pdf'),
+                'label' => __('Invoice Footer Text', 'fluentforms-pdf'),
+                'tips' => __('Write Invoice Footer Text. This will show at the end of the invoice', 'fluentforms-pdf'),
                 'component' => 'value_textarea'
             ]
         );
@@ -154,28 +154,28 @@ class InvoiceTemplate extends TemplateManager
                     <?php endif; ?>
                     <?php if($paymentSettings): ?>
                     <div class="business_address">
-                        <div class="business_name"><?php echo fluentform_sanitize_html(Arr::get($paymentSettings, 'business_name')); ?></div>
-                        <div class="business_address"><?php echo fluentform_sanitize_html(Arr::get($paymentSettings, 'business_address')); ?></div>
+                        <div class="business_name"><?php echo fluentform_sanitize_html(Arr::get($paymentSettings, 'business_name')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags?></div>
+                        <div class="business_address"><?php echo fluentform_sanitize_html(Arr::get($paymentSettings, 'business_address')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></div>
                     </div>
                     <?php endif; ?>
                 </td>
                 <td style="width: 20%"></td>
                 <td style="width: 40%" class="customer_row">
                     <?php if(Arr::get($settings, 'invoice_prefix')): ?>
-                        <h2 style="padding-bottom: 30px" class="invoice_title"><?php _e('RECEIPT:', 'fluentform-pdf');?> <?php echo fluentform_sanitize_html(Arr::get($settings, 'invoice_prefix')).'-'.$submission->serial_number; ?></h2>
+                        <h2 style="padding-bottom: 30px" class="invoice_title"><?php esc_html_e('RECEIPT:', 'fluentforms-pdf');?> <?php echo fluentform_sanitize_html(Arr::get($settings, 'invoice_prefix')).'-' . esc_html($submission->serial_number); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></h2>
                         <br/>
                     <?php endif; ?>
 
                     <div  class="heading_items">
-                        <div class="order_number"><b><?php _e('Order Number:', 'fluentform-pdf'); ?></b> <?php echo fluentform_sanitize_html($submission->id); ?></div>
-                        <div class="payment_date"><b><?php _e('Payment Date:', 'fluentform-pdf'); ?></b> <?php echo fluentform_sanitize_html(date(get_option( 'date_format' ), strtotime($submission->created_at))); ?></div>
+                        <div class="order_number"><b><?php esc_html_e('Order Number:', 'fluentforms-pdf'); ?></b> <?php echo fluentform_sanitize_html($submission->id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></div>
+                        <div class="payment_date"><b><?php esc_html_e('Payment Date:', 'fluentforms-pdf'); ?></b> <?php echo fluentform_sanitize_html(date(get_option( 'date_format' ), strtotime($submission->created_at))); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date, WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></div>
                         <br />
                         <div class="customer_details">
                             <?php if(Arr::get($settings, 'customer_name') || Arr::get($settings, 'customer_address') || Arr::get($settings, 'customer_email')): ?>
-                                <p style="font-weight: bold; margin-bottom:10px;" class="customer_heading"><?php _e('Customer Details', 'fluentform-pdf'); ?></p>
-                                <p class="customer_name"><?php echo fluentform_sanitize_html(Arr::get($settings, 'customer_name')); ?></p>
-                                <p class="customer_address"><?php echo fluentform_sanitize_html(Arr::get($settings, 'customer_address')); ?></p>
-                                <p class="customer_email"><?php echo fluentform_sanitize_html(Arr::get($settings, 'customer_email')); ?></p>
+                                <p style="font-weight: bold; margin-bottom:10px;" class="customer_heading"><?php esc_html_e('Customer Details', 'fluentforms-pdf'); ?></p>
+                                <p class="customer_name"><?php echo fluentform_sanitize_html(Arr::get($settings, 'customer_name')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></p>
+                                <p class="customer_address"><?php echo fluentform_sanitize_html(Arr::get($settings, 'customer_address')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></p>
+                                <p class="customer_email"><?php echo fluentform_sanitize_html(Arr::get($settings, 'customer_email')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -183,19 +183,19 @@ class InvoiceTemplate extends TemplateManager
             </tr>
         </table>
         <hr />
-        <div class="receipt_upper_text"><?php echo fluentform_sanitize_html(Arr::get($settings, 'invoice_upper_text')); ?></div>
+        <div class="receipt_upper_text"><?php echo fluentform_sanitize_html(Arr::get($settings, 'invoice_upper_text')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></div>
 
-        <div class="invoice_lines"><?php echo fluentform_sanitize_html(Arr::get($settings, 'invoice_lines')); ?></div>
+        <div class="invoice_lines"><?php echo fluentform_sanitize_html(Arr::get($settings, 'invoice_lines')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?></div>
         
         <?php if (strpos(Arr::get($settings, 'payment_summary'), 'class="ffp_payment_info_table"') !== false): ?>
             <div class="invoice_summary">
-                <h3><?php _e('Payment Details', 'fluentform-pdf');?></h3>
-                <?php echo fluentform_sanitize_html(Arr::get($settings, 'payment_summary')); ?>
+                <h3><?php esc_html_e('Payment Details', 'fluentforms-pdf');?></h3>
+                <?php echo fluentform_sanitize_html(Arr::get($settings, 'payment_summary')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?>
             </div>
         <?php endif;?>
 
         <div class="invoice_thanks">
-            <?php echo fluentform_sanitize_html(Arr::get($settings, 'invoice_thanks')); ?>
+            <?php echo fluentform_sanitize_html(Arr::get($settings, 'invoice_thanks')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() removes XSS vectors and uses wp_kses() with allowed tags ?>
         </div>
         <style>
             .business_logo {

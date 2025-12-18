@@ -138,7 +138,7 @@ trait MailChimpSubscriber
                                 }
                             }
                             elseif ('birthday' == $fieldSettings['type']) {
-                                $mergeFields[$fieldName] = gmdate('d/m', strtotime($formFieldValue));
+                                $mergeFields[$fieldName] = date('d/m', strtotime($formFieldValue));
                             } else {
                                 $date = \DateTime::createFromFormat('d/m/Y', $formFieldValue) ?: \DateTime::createFromFormat('m/d/Y', $formFieldValue);
 

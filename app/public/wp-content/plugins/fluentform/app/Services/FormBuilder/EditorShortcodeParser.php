@@ -362,7 +362,7 @@ class EditorShortcodeParser
     private static function parseDate($value, $form = null)
     {
         $format = substr(str_replace(['}', '{'], '', $value), 5);
-        $date = gmdate($format, strtotime(current_time('mysql')));
+        $date = date($format, strtotime(current_time('mysql')));
         return $date ? esc_html($date) : '';
     }
     

@@ -76,23 +76,29 @@ class SubmissionHandlerService
                 });
             }
             
-            // Process "Other" options for checkboxes
+            // Process "Other" options for checkboxes and radio fields
             if (strpos($name, '__ff_other_input__') !== false && !empty($input)) {
-                $checkboxFieldName = str_replace('__ff_other_input__', '', $name);
+                $fieldName = str_replace('__ff_other_input__', '', $name);
                 
-                if (isset($formDataRaw[$checkboxFieldName]) && is_array($formDataRaw[$checkboxFieldName])) {
-                    $selectedValues = $formDataRaw[$checkboxFieldName];
+                // Handle checkbox fields (array values)
+                if (isset($formDataRaw[$fieldName]) && is_array($formDataRaw[$fieldName])) {
+                    $selectedValues = $formDataRaw[$fieldName];
                     
                     // Handle field-specific "Other" values
-                    $otherValue = '__ff_other_' . $checkboxFieldName . '__';
+                    $otherValue = '__ff_other_' . $fieldName . '__';
                     
                     $key = array_search($otherValue, $selectedValues);
                     
                     if ($key !== false) {
                         $selectedValues[$key] = 'Other: ' . sanitize_text_field($input);
-                        $formDataRaw[$checkboxFieldName] = $selectedValues;
+                        $formDataRaw[$fieldName] = $selectedValues;
                     }
                 }
+                // Handle radio fields (single value)
+                elseif (isset($formDataRaw[$fieldName]) && $formDataRaw[$fieldName] === '__ff_other_' . $fieldName . '__') {
+                    $formDataRaw[$fieldName] = 'Other: ' . sanitize_text_field($input);
+                }
+                
                 unset($formDataRaw[$name]);
             }
         }
@@ -609,3 +615,4 @@ class SubmissionHandlerService
         ]);
     }
 }
+

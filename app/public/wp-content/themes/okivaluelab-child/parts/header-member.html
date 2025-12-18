@@ -1,9 +1,9 @@
 <!-- wp:group {"tagName":"header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
-<header class="wp-block-group">
+<header class="wp-block-group site-header">
 
   <!-- ロゴ（Hello, ユーザー名） -->
   <!-- wp:group {"layout":{"type":"constrained"}} -->
-  <div class="wp-block-group">
+  <div class="wp-block-group header-inner">
     <!-- wp:site-title {"level":2,"isLink":true} /-->
     <!-- wp:paragraph -->
     <p class="screen-reader-text">会員ナビゲーション</p>
@@ -11,20 +11,28 @@
   </div>
   <!-- /wp:group -->
 
-  <!-- ナビ（member向け） -->
-  <!-- wp:navigation {"ariaLabel":"Primary Navigation (Member)","layout":{"type":"flex","justifyContent":"right","flexWrap":"wrap"}} -->
-    <!-- wp:navigation-link {"label":"物件一覧","url":"/property_list/"} /-->
-    <!-- wp:navigation-link {"label":"会員トップ","url":"/members/"} /-->
-    <!-- wp:navigation-link {"label":"相談","url":"/consult/"} /-->
-    <!-- wp:navigation-link {"label":"ログアウト","url":"/wp-login.php?action=logout"} /-->
-  <!-- /wp:navigation -->
+  <!-- ナビ＋ログアウト -->
+  <!-- wp:group {"className":"header-nav-auth","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
+  <div class="wp-block-group header-nav-auth">
+    <!-- wp:navigation {"ariaLabel":"Primary Navigation (Member)","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"}} -->
+    <!-- wp:navigation-link {"label":"トップ","url":"/"} /-->
+    <!-- wp:navigation-link {"label":"限定物件","url":"/property_list/"} /-->
+    <!-- wp:navigation-link {"label":"質問する","url":"/member-consult/"} /-->
+    <!-- /wp:navigation -->
 
-  <!-- CTA（member向け） -->
-  <!-- wp:buttons -->
-    <!-- wp:button {"className":"is-style-outline"} -->
-      <a class="wp-block-button__link" href="/members/" aria-label="会員トップへ">会員トップ</a>
-    <!-- /wp:button -->
-  <!-- /wp:buttons -->
+    <!-- wp:group {"className":"header-auth","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+    <div class="wp-block-group header-auth">
+      <!-- wp:paragraph {"className":"header-auth__link"} -->
+      <p class="header-auth__link"><a href="/members/">マイページ</a></p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:shortcode -->
+      [ovl_logout_link class="header-auth__link" redirect="/"]
+      <!-- /wp:shortcode -->
+    </div>
+    <!-- /wp:group -->
+  </div>
+  <!-- /wp:group -->
 
 </header>
 <!-- /wp:group -->

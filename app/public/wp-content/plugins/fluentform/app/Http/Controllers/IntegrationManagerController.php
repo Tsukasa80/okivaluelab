@@ -37,7 +37,7 @@ abstract class IntegrationManagerController extends IntegrationManagerHelper
         $this->priority = $priority;
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Constructor, nonce verified in route handlers
-        if(isset($_REQUEST['form_id'])) {
+        if (isset($_REQUEST['form_id'])) {
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Constructor, nonce verified in route handlers
             $formId = (int)$_REQUEST['form_id'];
             parent::__construct(

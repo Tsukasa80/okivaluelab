@@ -359,4 +359,19 @@ class GlobalSettingsHelper
 
         return true;
     }
+
+    public function storeAutosaveSettings($attributes)
+    {
+        $enabled = Arr::get($attributes, 'autosave_enabled', 'no');
+
+        $settings = get_option('_fluentform_global_form_settings', []);
+        if (!isset($settings['misc'])) {
+            $settings['misc'] = [];
+        }
+        $settings['misc']['autosave_enabled'] = $enabled;
+
+        update_option('_fluentform_global_form_settings', $settings, 'no');
+
+        return true;
+    }
 }

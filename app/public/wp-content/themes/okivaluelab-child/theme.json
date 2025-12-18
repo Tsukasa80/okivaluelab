@@ -6,6 +6,18 @@
       "name": "property-archive",
       "title": "Property Archive Page",
       "postTypes": ["page"]
+    },
+    {
+      "name": "property-card",
+      "title": "Property Card (Latest 3)",
+      "postTypes": ["page"]
+    }
+  ],
+  "templateParts": [
+    {
+      "name": "property-card",
+      "title": "Property Card Section",
+      "area": "uncategorized"
     }
   ]
 }

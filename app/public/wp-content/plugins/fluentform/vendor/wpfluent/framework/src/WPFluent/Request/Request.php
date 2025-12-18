@@ -140,23 +140,60 @@ class Request
      */
     public function getIp()
     {
-        // Nginx + Cloudflare setup
+        // 1. Try Cloudflare IP
         if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            return $this->server('HTTP_CF_CONNECTING_IP');
+            $ip = $this->extractValidIp($_SERVER['HTTP_CF_CONNECTING_IP']);
+            if ($ip) {
+                return $ip;
+            }
         }
 
+        // 2. Try X-Real-IP
         if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
-            return $this->server('HTTP_X_REAL_IP');
+            $ip = $this->extractValidIp($_SERVER['HTTP_X_REAL_IP']);
+            if ($ip) {
+                return $ip;
+            }
         }
 
-        // Nginx is configured to use X-Forwarded-For
+        // 3. Try X-Forwarded-For
         if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ips = explode(',', $this->server('HTTP_X_FORWARDED_FOR'));
-            return trim($ips[0]); // First IP is typically the client
+            $ip = $this->extractValidIp($_SERVER['HTTP_X_FORWARDED_FOR']);
+            if ($ip) {
+                return $ip;
+            }
         }
 
-        // Fallback to direct connection
-        return $this->server('REMOTE_ADDR') ? $this->server('REMOTE_ADDR') : '0.0.0.0';
+        // 4. Fallback to REMOTE_ADDR
+        if (!empty($_SERVER['REMOTE_ADDR'])) {
+            $ip = $this->extractValidIp($_SERVER['REMOTE_ADDR']);
+            if ($ip) {
+                return $ip;
+            }
+        }
+
+        // 5. Final fallback
+        return '0.0.0.0';
+    }
+
+    private function extractValidIp($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        // Sometimes Cloudflare/Nginx sends multiple "IP"
+        $parts = explode(',', $value);
+
+        foreach ($parts as $ip) {
+            $ip = trim($ip);
+
+            if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                return $ip;
+            }
+        }
+
+        return null;
     }
     
     public function server($key = null, $default = null)

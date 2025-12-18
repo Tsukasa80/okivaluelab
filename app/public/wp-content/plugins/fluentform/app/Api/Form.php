@@ -33,6 +33,7 @@ class Form
         $is_filter_by_conv_or_step_form = $filter_by && ('conv_form' == $filter_by || 'step_form' == $filter_by);
 
         $shortColumn = sanitize_sql_orderby(ArrayHelper::get($atts, 'sort_column', 'id'));
+        $shortColumn = $shortColumn !== false && $shortColumn !== '' ? $shortColumn : 'id';
         $sortBy = Helper::sanitizeOrderValue(ArrayHelper::get($atts, 'sort_by', 'DESC'));
 
         $query = \FluentForm\App\Models\Form::orderBy($shortColumn, $sortBy)->getQuery();

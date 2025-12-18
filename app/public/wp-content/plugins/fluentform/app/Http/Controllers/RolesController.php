@@ -9,14 +9,29 @@ class RolesController extends Controller
 {
     public function index(RolesService $rolesService)
     {
-        $result = $rolesService->getRoles($this->request->all());
+        $attributes = $this->request->all();
+        
+        $sanitizeMap = [
+            'search' => 'sanitize_text_field',
+        ];
+        $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+        
+        $result = $rolesService->getRoles($attributes);
         return $this->sendSuccess($result);
     }
     
     public function addCapability(RolesService $rolesService)
     {
         try {
-            $result = $rolesService->setCapability($this->request->all());
+            $attributes = $this->request->all();
+            
+            $sanitizeMap = [
+                'role' => 'sanitize_text_field',
+                'capability' => 'sanitize_text_field',
+            ];
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+            
+            $result = $rolesService->setCapability($attributes);
             return $this->sendSuccess($result);
         } catch (ValidationException $exception) {
             return $this->sendError($exception->errors(), 422);

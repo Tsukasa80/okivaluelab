@@ -5,14 +5,42 @@ namespace FluentForm\App\Http\Controllers;
 use Exception;
 use FluentForm\App\Models\Submission;
 use FluentForm\App\Services\Submission\SubmissionService;
+use FluentForm\Framework\Support\Arr;
 
 class SubmissionController extends Controller
 {
     public function index(SubmissionService $submissionService)
     {
         try {
+            $attributes = $this->request->all();
+            
+            $sanitizeMap = [
+                'search'       => 'sanitize_text_field',
+                'status'       => 'sanitize_text_field',
+                'entry_type'   => 'sanitize_text_field',
+                'form_id'      => 'intval',
+                'per_page'     => 'intval',
+                'page'         => 'intval',
+                'is_favourite' => 'rest_sanitize_boolean',
+            ];
+            
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+            
+            
+            // If frontend sends `entry_type` (used by some components), map it to `status`
+            if (isset($attributes['entry_type']) && !isset($attributes['status'])) {
+                $attributes['status'] = $attributes['entry_type'];
+            }
+
+            if (isset($attributes['date_range']) && is_array($attributes['date_range'])) {
+                $attributes['date_range'] = array_map('sanitize_text_field', $attributes['date_range']);
+            }
+            if (isset($attributes['payment_statuses']) && is_array($attributes['payment_statuses'])) {
+                $attributes['payment_statuses'] = array_map('sanitize_text_field', $attributes['payment_statuses']);
+            }
+
             return $this->sendSuccess(
-                $submissionService->get($this->request->all())
+                $submissionService->get($attributes)
             );
         } catch (Exception $e) {
             return $this->sendError([
@@ -37,8 +65,15 @@ class SubmissionController extends Controller
     public function resources(SubmissionService $submissionService)
     {
         try {
+            $attributes = $this->request->all();
+            
+            $sanitizeMap = [
+                'form_id' => 'intval',
+            ];
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+            
             return $this->sendSuccess(
-                $submissionService->resources($this->request->all())
+                $submissionService->resources($attributes)
             );
         } catch (Exception $e) {
             return $this->sendError([
@@ -166,8 +201,36 @@ class SubmissionController extends Controller
     public function all(Submission $submission)
     {
         try {
+            $attributes = $this->request->all();
+
+            // Use backend sanitizer map for scalar fields (preserves expected types)
+            $sanitizeMap = [
+                'search'       => 'sanitize_text_field',
+                'status'       => 'sanitize_text_field',
+                'entry_type'   => 'sanitize_text_field',
+                'form_id'      => 'intval',
+                'per_page'     => 'intval',
+                'page'         => 'intval',
+                'is_favourite' => 'rest_sanitize_boolean',
+            ];
+
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+
+            // Handle frontend `entry_type` param (sanitize and map to `status` if needed)
+            if (isset($attributes['entry_type']) && !isset($attributes['status'])) {
+                $attributes['status'] = $attributes['entry_type'];
+            }
+
+            // Sanitize array fields explicitly (sanitizer recurses but won't apply parent's key sanitizer to numeric child keys)
+            if (isset($attributes['date_range']) && is_array($attributes['date_range'])) {
+                $attributes['date_range'] = array_map('sanitize_text_field', $attributes['date_range']);
+            }
+            if (isset($attributes['payment_statuses']) && is_array($attributes['payment_statuses'])) {
+                $attributes['payment_statuses'] = array_map('sanitize_text_field', $attributes['payment_statuses']);
+            }
+
             return $this->sendSuccess(
-                $submission->allSubmissions($this->request->all())
+                $submission->allSubmissions($attributes)
             );
         } catch (Exception $e) {
             return $this->sendError([
@@ -183,8 +246,21 @@ class SubmissionController extends Controller
     public function print(SubmissionService $submissionService)
     {
         try {
+            $attributes = $this->request->all();
+            
+            $sanitizeMap = [
+                'entry_ids' => function($value) {
+                    if (is_array($value)) {
+                        return array_map('intval', $value);
+                    }
+                    return [];
+                },
+                'form_id' => 'intval',
+            ];
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+            
             return $this->sendSuccess(
-                $submissionService->getPrintContent($this->request->all())
+                $submissionService->getPrintContent($attributes)
             );
         } catch (Exception $e) {
             return $this->sendError([

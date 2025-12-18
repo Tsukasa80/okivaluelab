@@ -47,7 +47,7 @@ class FormIntegrationController extends Controller
     public function delete(FormIntegrationService $integrationService)
     {
         try {
-            $id = $this->request->get('integration_id');
+            $id = intval($this->request->get('integration_id'));
             $integrationService->delete($id);
             return $this->sendSuccess([
                 'message' => __('Successfully deleted the Integration.', 'fluentform'),
@@ -62,9 +62,17 @@ class FormIntegrationController extends Controller
     public function integrationListComponent()
     {
         try {
-            $integrationName = $this->request->get('integration_name');
-            $formId = intval($this->request->get('form_id'));
-            $listId = $this->request->get('list_id');
+            $attributes = $this->request->all();
+            
+            $sanitizeMap = [
+                'integration_name' => 'sanitize_text_field',
+                'list_id'          => 'sanitize_text_field',
+            ];
+            $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+            
+            $integrationName = $attributes['integration_name'];
+            $formId = (int)$attributes['form_id'];
+            $listId = $attributes['list_id'];
             $merge_fields = false;
             $merge_fields = apply_filters_deprecated(
                 'fluentform_get_integration_merge_fields_' . $integrationName,

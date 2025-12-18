@@ -33,7 +33,7 @@ class TransferService
             $forms[] = $form;
         }
     
-        $fileName = 'fluentform-export-forms-' . count($forms) . '-' . gmdate('d-m-Y') . '.json';
+        $fileName = 'fluentform-export-forms-' . count($forms) . '-' . date('d-m-Y') . '.json';
 
         header('Content-disposition: attachment; filename=' . $fileName);
 
@@ -239,7 +239,7 @@ class TransferService
         $data = array_merge([array_values($inputLabels)], $exportData);
         
         $data = apply_filters('fluentform/export_data', $data, $form, $exportData, $inputLabels);
-        $fileName = sanitize_title($form->title, 'export', 'view') . '-' . gmdate('Y-m-d');
+        $fileName = sanitize_title($form->title, 'export', 'view') . '-' . date('Y-m-d');
         self::downloadOfficeDoc($data, $type, $fileName);
     }
 
@@ -262,7 +262,7 @@ class TransferService
         foreach ($submissions as $submission) {
             $submission->response = json_decode($submission->response, true);
         }
-        header('Content-disposition: attachment; filename=' . sanitize_title($form->title, 'export', 'view') . '-' . gmdate('Y-m-d') . '.json');
+        header('Content-disposition: attachment; filename=' . sanitize_title($form->title, 'export', 'view') . '-' . date('Y-m-d') . '.json');
         header('Content-type: application/json');
         echo json_encode($submissions); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $submissions is escaped before being passed in.
         exit();
@@ -295,7 +295,7 @@ class TransferService
         }, $data);
         // Load Composer autoloader for OpenSpout
         require_once FLUENTFORM_DIR_PATH . '/vendor/autoload.php';
-        $fileName = ($fileName) ? $fileName . '.' . $type : 'export-data-' . gmdate('d-m-Y') . '.' . $type;
+        $fileName = ($fileName) ? $fileName . '.' . $type : 'export-data-' . date('d-m-Y') . '.' . $type;
 
         // Create writer based on type using WriterEntityFactory
         switch (strtolower($type)) {

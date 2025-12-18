@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the Themes - OnePress package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-02-15 14:11:45+0000\n"
+"PO-Revision-Date: 2025-11-24 04:08:49+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: GlotPress/4.0.1\n"
+"X-Generator: GlotPress/4.0.3\n"
 "Language: ja_JP\n"
 "Project-Id-Version: Themes - OnePress\n"
 
@@ -162,11 +162,11 @@ msgstr "セクション: クライアント"
 msgid "Section: Slider"
 msgstr "セクション: スライダー"
 
-#: inc/admin/dashboard.php:281
+#: inc/admin/dashboard.php:282
 msgid "Demo Import"
 msgstr "デモインポート"
 
-#: inc/admin/dashboard.php:275
+#: inc/admin/dashboard.php:276
 msgid "Overview"
 msgstr "概要"
 
@@ -181,6 +181,10 @@ msgstr "カスタマイザーセクション管理"
 #: inc/admin/dashboard.php:202
 msgid "Settings saved"
 msgstr "設定を保存しました"
+
+#: inc/admin/dashboard.php:182
+msgid "Plus Feature"
+msgstr "Plus 版機能"
 
 #: functions.php:129
 msgid "Contact Form by WPForms"
@@ -270,7 +274,7 @@ msgstr "ナビゲーションラベルを有効化"
 msgid "Home"
 msgstr "ホーム"
 
-#: inc/admin/dashboard.php:314
+#: inc/admin/dashboard.php:315
 msgid "Create a support ticket"
 msgstr "サポートチケットを作成"
 
@@ -278,11 +282,11 @@ msgstr "サポートチケットを作成"
 msgid "Transparent Logo Height in Pixel"
 msgstr "ピクセル単位の透過ロゴの高さ"
 
-#: inc/admin/dashboard.php:435
+#: inc/admin/dashboard.php:436
 msgid "Keep %s updated"
 msgstr "%s を最新に保つ"
 
-#: inc/admin/dashboard.php:355
+#: inc/admin/dashboard.php:356
 msgid "Your settings were copied."
 msgstr "設定をコピーしました。"
 
@@ -310,15 +314,15 @@ msgstr "サイトキャッチフレーズの色"
 msgid "Page Settings"
 msgstr "ページ設定"
 
-#: inc/admin/dashboard.php:644
+#: inc/admin/dashboard.php:645
 msgid "Get OnePress Plus now!"
 msgstr "OnePress Plus を今すぐ入手 !"
 
-#: inc/admin/dashboard.php:279
+#: inc/admin/dashboard.php:280
 msgid "Free vs PLUS"
 msgstr "無料版と PLUS 版の違い"
 
-#: inc/admin/dashboard.php:276
+#: inc/admin/dashboard.php:277
 msgid "Recommended Actions"
 msgstr "推奨アクション"
 
@@ -617,27 +621,27 @@ msgstr "Font Awesome"
 msgid "Search"
 msgstr "検索"
 
-#: inc/admin/dashboard.php:724
-msgid "Are you sure want to copy ?"
+#: inc/admin/dashboard.php:725
+msgid "Are you sure you want to copy?"
 msgstr "本当にコピーしてもよろしいですか ?"
 
-#: inc/admin/dashboard.php:373
+#: inc/admin/dashboard.php:374
 msgid "Recommend Plugins"
 msgstr "おすすめのプラグイン"
 
-#: inc/admin/dashboard.php:352
+#: inc/admin/dashboard.php:353
 msgid "Copy now"
 msgstr "今すぐコピー"
 
-#: inc/admin/dashboard.php:344
+#: inc/admin/dashboard.php:345
 msgid "To Theme"
 msgstr "テーマへ"
 
-#: inc/admin/dashboard.php:338
+#: inc/admin/dashboard.php:339
 msgid "From Theme"
 msgstr "テーマから"
 
-#: inc/admin/dashboard.php:792
+#: inc/admin/dashboard.php:793
 msgid "Details"
 msgstr "詳細"
 
@@ -773,19 +777,19 @@ msgstr "ギャラリー"
 msgid "Section: Gallery"
 msgstr "セクション: ギャラリー"
 
-#: inc/admin/dashboard.php:705
+#: inc/admin/dashboard.php:706
 msgid "FameThemes Demo Importer"
 msgstr "FameThemes デモインポーター"
 
-#: inc/admin/dashboard.php:704
+#: inc/admin/dashboard.php:705
 msgid "Hey."
 msgstr " "
 
-#: inc/admin/dashboard.php:683 inc/admin/dashboard.php:772
+#: inc/admin/dashboard.php:684 inc/admin/dashboard.php:773
 msgid "Active Now"
 msgstr "今すぐ有効化"
 
-#: inc/admin/dashboard.php:662 inc/admin/dashboard.php:751
+#: inc/admin/dashboard.php:663 inc/admin/dashboard.php:752
 msgid "Install Now"
 msgstr "今すぐインストール"
 
@@ -999,11 +1003,11 @@ msgstr "購読"
 msgid "Enter your e-mail address"
 msgstr "メールアドレスを入力してください"
 
-#: inc/admin/dashboard.php:312
+#: inc/admin/dashboard.php:313
 msgid "Support for %s WordPress theme is conducted through FameThemes support ticket system."
 msgstr "WordPress テーマ %s のサポートは、FameThemes のサポートチケットシステムを通じて行われます。"
 
-#: inc/admin/dashboard.php:306
+#: inc/admin/dashboard.php:307
 msgid "OnePress Documentation"
 msgstr "OnePress ドキュメンテーション"
 
@@ -1131,39 +1135,39 @@ msgstr "セクションの見出し"
 msgid "Section: Video Lightbox"
 msgstr "セクション: ビデオライトボックス"
 
-#: inc/admin/dashboard.php:436
+#: inc/admin/dashboard.php:437
 msgid "Hooray! There are no required actions for you right now."
 msgstr "今のところ必要な作業はありません。"
 
-#: inc/admin/dashboard.php:426
+#: inc/admin/dashboard.php:427
 msgid "Change homepage page template"
 msgstr "トップページのページテンプレートを変更"
 
-#: inc/admin/dashboard.php:412
+#: inc/admin/dashboard.php:413
 msgid "In order to change homepage section contents, you will need to set template \"Frontpage\" for your homepage."
 msgstr "ホームページのセクション内容を変更するには、ホームページのテンプレートを「フロントページ」に設定します。"
 
-#: inc/admin/dashboard.php:409
+#: inc/admin/dashboard.php:410
 msgid "Set your homepage page template to \"Frontpage\"."
 msgstr "トップページのページテンプレートを「フロントページ」に設定します。"
 
-#: inc/admin/dashboard.php:395 inc/admin/dashboard.php:419
+#: inc/admin/dashboard.php:396 inc/admin/dashboard.php:420
 msgid "Setup front page displays"
 msgstr "フロントページの表示設定"
 
-#: inc/admin/dashboard.php:392
+#: inc/admin/dashboard.php:393
 msgid "In order to have the one page look for your website, please go to Customize -&gt; Static Front Page and switch \"Front page displays\" to \"A static page\"."
 msgstr "サイトを1ページ表示にするには、「カスタマイズ」>「固定フロントページ」で、「フロントページ表示」を「固定ページ」に切り替えます。"
 
-#: inc/admin/dashboard.php:390
+#: inc/admin/dashboard.php:391
 msgid "Switch \"Front page displays\" to \"A static page\""
 msgstr "「フロントページ表示」を「固定ページ」に切り替える"
 
-#: inc/admin/dashboard.php:383 inc/admin/dashboard.php:402
+#: inc/admin/dashboard.php:384 inc/admin/dashboard.php:403
 msgid "Dismiss"
 msgstr "非表示"
 
-#: inc/admin/dashboard.php:268
+#: inc/admin/dashboard.php:269
 msgid "Welcome to OnePress - Version %1s"
 msgstr "OnePress バージョン%1sへようこそ。"
 
@@ -1306,31 +1310,31 @@ msgctxt "post date"
 msgid "Posted on %s"
 msgstr "投稿日: %s"
 
-#: inc/admin/dashboard.php:311
+#: inc/admin/dashboard.php:312
 msgid "Having Trouble, Need Support?"
 msgstr "お困りですか ?"
 
-#: inc/admin/dashboard.php:304
+#: inc/admin/dashboard.php:305
 msgid "Need any help to setup and configure %s? Please have a look at our documentations instructions."
 msgstr "%s の設置や設定でお困りですか? ドキュメンテーションをご覧ください。"
 
-#: inc/admin/dashboard.php:303
+#: inc/admin/dashboard.php:304
 msgid "Theme Documentation"
 msgstr "テーマドキュメンテーション"
 
-#: inc/admin/dashboard.php:299
+#: inc/admin/dashboard.php:300
 msgid "Start Customize"
 msgstr "カスタマイズを始める"
 
-#: inc/admin/dashboard.php:297
+#: inc/admin/dashboard.php:298
 msgid "%s supports the Theme Customizer for all theme settings. Click \"Customize\" to start customize your site."
 msgstr "%s は、すべてのテーマ設定をテーマカスタマイザーで行います。「カスタマイズ」をクリックして、あなたのサイトのカスタマイズを始めましょう。"
 
-#: inc/admin/dashboard.php:296
+#: inc/admin/dashboard.php:297
 msgid "Theme Customizer"
 msgstr "テーマカスタマイザー"
 
-#: inc/admin/dashboard.php:269
+#: inc/admin/dashboard.php:270
 msgid "OnePress is a creative and flexible WordPress ONE PAGE theme well suited for business, portfolio, digital agency, product showcase, freelancers websites."
 msgstr "OnePress は、ビジネスのポートフォリオ、制作会社、製品ショーケース、フリーランサーの Web サイトに適した、創造的で柔軟な WordPress の1ページのテーマです。"
 
@@ -1778,30 +1782,30 @@ msgstr "メンバーを選択"
 msgid "Select page"
 msgstr "固定ページを選択"
 
-#: inc/customize-controls/control-repeater.php:357
+#: inc/customize-controls/control-repeater.php:372
 msgid "Close"
 msgstr "閉じる"
 
-#: inc/customize-controls/control-repeater.php:322
+#: inc/customize-controls/control-repeater.php:337
 msgid "Change"
 msgstr "変更"
 
-#: inc/customize-controls/control-repeater.php:322
+#: inc/customize-controls/control-repeater.php:337
 msgid "Add"
 msgstr "追加"
 
-#: inc/customize-controls/control-repeater.php:321
-#: inc/customize-controls/control-repeater.php:343
-#: inc/customize-controls/control-repeater.php:355
+#: inc/customize-controls/control-repeater.php:336
+#: inc/customize-controls/control-repeater.php:358
+#: inc/customize-controls/control-repeater.php:370
 msgid "Remove"
 msgstr "削除"
 
 #: inc/customize-controls/control-repeater.php:76
-#: inc/customize-controls/control-repeater.php:205
+#: inc/customize-controls/control-repeater.php:220
 msgid "Item"
 msgstr "項目"
 
-#: inc/customize-controls/control-repeater.php:190
+#: inc/customize-controls/control-repeater.php:205
 msgid "Add an item"
 msgstr "項目を追加"
 

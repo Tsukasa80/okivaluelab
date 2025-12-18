@@ -1,0 +1,30 @@
+<!-- wp:group {"tagName":"main"} -->
+<main class="wp-block-group">
+  <!-- wp:query {"query":{"postType":"property","perPage":4,"order":"desc","orderBy":"date"}} -->
+  <div class="wp-block-query">
+    <!-- wp:post-template {"layout":{"type":"grid","columnCount":4}} -->
+      <!-- wp:group {"className":"property-card property-card--latest","layout":{"type":"constrained"}} -->
+      <div class="wp-block-group property-card property-card--latest">
+        <!-- wp:post-featured-image {"isLink":true,"sizeSlug":"property_card","className":"property-card__thumb"} /-->
+        <!-- wp:group {"className":"property-card__content","layout":{"type":"constrained"}} -->
+        <div class="wp-block-group property-card__content">
+          <!-- wp:post-title {"level":4,"isLink":true,"className":"property-card__title"} /-->
+          <!-- wp:group {"className":"property-card__meta-list","layout":{"type":"flex","flexWrap":"wrap"}} -->
+          <div class="wp-block-group property-card__meta-list">
+            <!-- wp:okivaluelab/property-meta {"variant":"price"} /-->
+            <!-- wp:okivaluelab/property-meta {"variant":"yield"} /-->
+          </div>
+          <!-- /wp:group -->
+        </div>
+        <!-- /wp:group -->
+      </div>
+      <!-- /wp:group -->
+    <!-- /wp:post-template -->
+
+    <!-- wp:query-no-results -->
+      <!-- wp:paragraph -->現在公開中の物件はありません。<!-- /wp:paragraph -->
+    <!-- /wp:query-no-results -->
+  </div>
+  <!-- /wp:query -->
+</main>
+<!-- /wp:group -->

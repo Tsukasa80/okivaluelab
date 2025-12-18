@@ -37,6 +37,11 @@ class GlobalSettingsService
     public function store($attributes = [])
     {
         $key = Arr::get($attributes, 'key');
+        if (is_array($key)) {
+            $key = array_map('sanitize_text_field', $key);
+        } else {
+            $key = sanitize_text_field($key);
+        }
 
         $globalSettingsHelper = new GlobalSettingsHelper();
 
@@ -48,6 +53,7 @@ class GlobalSettingsService
             'storeSaveGlobalLayoutSettings',
             'storeMailChimpSettings',
             'storeEmailSummarySettings',
+            'storeAutosaveSettings',
         ];
 
         $method = '';

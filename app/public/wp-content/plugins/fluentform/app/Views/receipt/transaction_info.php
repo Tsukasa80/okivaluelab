@@ -8,7 +8,7 @@
     </div>
     <div class="ffp_payment_info_item ffp_payment_info_item_date">
         <div class="ffp_item_heading"><?php esc_html_e('Date:' ,'fluentform');?></div>
-        <div class="ffp_item_value"><?php echo esc_html(gmdate(get_option( 'date_format' ), strtotime($transaction->created_at))); ?></div>
+        <div class="ffp_item_value"><?php echo esc_html(date(get_option( 'date_format' ), strtotime($transaction->created_at))); ?></div>
     </div>
     <?php if($transaction->payment_method): ?>
         <div class="ffp_payment_info_item ffp_payment_info_item_payment_method">

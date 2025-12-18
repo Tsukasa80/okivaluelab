@@ -395,7 +395,7 @@ class ShortCodeParser
     {
         if (0 === strpos($key, 'date.')) {
             $format = str_replace('date.', '', $key);
-            return gmdate($format, strtotime(current_time('mysql')));
+            return date($format, strtotime(current_time('mysql')));
         } elseif ('admin_email' == $key) {
             return get_option('admin_email', false);
         } elseif ('ip' == $key) {

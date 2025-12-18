@@ -61,6 +61,9 @@ return static function ( array $context = [] ): string {
 	};
 
 	$is_member = isset( $context['is_user_logged_in'] ) ? (bool) $context['is_user_logged_in'] : is_user_logged_in();
+	$favorites = $is_member && function_exists( 'ovl_favorites_get_ids' ) ? ovl_favorites_get_ids() : [];
+
+	wp_enqueue_script( 'ovl-favorites' );
 
 	ob_start();
 	?>
@@ -108,16 +111,17 @@ return static function ( array $context = [] ): string {
 					$price       = $acf_get( 'price', $post_id );
 					$address     = $acf_get( 'address', $post_id );
 					$card_class  = $is_member ? 'ovl-card' : 'ovl-card is-guest';
+					$is_favorite = $is_member && in_array( $post_id, $favorites, true );
 					$login_url = add_query_arg(
-									'redirect_to',
-									$detail_url,
-									home_url( '/members/' )
-									);
-					$register_url = '';
-
-					if ( get_option( 'users_can_register' ) ) {
-						$register_url = add_query_arg( 'redirect_to', rawurlencode( $detail_url ), wp_registration_url() );
-					}
+						'redirect_to',
+						rawurlencode( $detail_url ),
+						home_url( '/members/' )
+					);
+					$register_url = add_query_arg(
+						'redirect_to',
+						rawurlencode( $detail_url ),
+						home_url( '/member-register/' )
+					);
 
 					$link = $is_member ? $detail_url : $login_url;
 					?>
