@@ -1,32 +1,120 @@
-<!--
-  Title: Members Login
-  Slug: page-members
-  Template Types: page
-  Description: 会員ログインページの専用テンプレート。
--->
-
-<!-- wp:template-part {"slug":"header-admin","area":"header"} /-->
-<!-- wp:template-part {"slug":"header-member","area":"header"} /-->
-<!-- wp:template-part {"slug":"header-guest","area":"header"} /-->
-
-<!-- wp:group {"tagName":"main","style":{"spacing":{"margin":{"top":"0"}}}} -->
+<!-- wp:group {"tagName":"main","style":{"spacing":{"margin":{"top":"0"}}},"layout":{"type":"constrained"}} -->
 <main class="wp-block-group" style="margin-top:0">
-  <!-- wp:group {"layout":{"type":"constrained"}} -->
-  <div class="wp-block-group">
-    <!-- wp:heading {"level":1} -->
-    <h1 class="wp-block-heading">会員ログイン</h1>
-    <!-- /wp:heading -->
+	<!-- wp:group {"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group">
+		[wpmem_logged_out]
+		<!-- wp:group {"style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"color":{"background":"#f4f5f7"}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group has-background" style="background-color:#f4f5f7;border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+			<!-- wp:heading {"level":1} -->
+			<h1 class="wp-block-heading">会員ログイン</h1>
+			<!-- /wp:heading -->
 
-    <!-- wp:paragraph -->
-    <p>ご登録済みのメールアドレスとパスワードでログインしてください。ログイン後は自動的に元のページへ戻ります。</p>
-    <!-- /wp:paragraph -->
+			<!-- wp:paragraph -->
+			<p>ご登録済みのメールアドレスとパスワードでログインしてください。ログイン後は元いたページに戻ります。</p>
+			<!-- /wp:paragraph -->
 
-    <!-- wp:shortcode -->
-    [wpmem_form login]
-    <!-- /wp:shortcode -->
-  </div>
-  <!-- /wp:group -->
+			<!-- wp:shortcode -->
+			[wpmem_form login]
+			<!-- /wp:shortcode -->
+		</div>
+		<!-- /wp:group -->
+		[/wpmem_logged_out]
 
+		[wpmem_logged_in]
+		<!-- wp:group {"metadata":{"name":"クイックアクション"},"className":"mypage-actions","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group mypage-actions">
+			<!-- wp:heading {"level":1} -->
+			<h2 class="wp-block-heading">マイページ</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:heading {"level":3} -->
+			<h3 class="wp-block-heading">すぐできること</h3>
+			<!-- /wp:heading -->
+
+
+			<!-- wp:html -->
+			<div class="card2-list card2-list--2col mypage-actions__grid">
+				<a class="card2 card2--link" href="/property/">
+					<div class="card2-title"><strong>限定物件を探す</strong></div>
+					<div class="card2-text">会員限定の詳細情報を確認できます。</div>
+				</a>
+
+				<a class="card2 card2--link" href="#favorites">
+					<div class="card2-title"><strong>お気に入りを見る</strong></div>
+					<div class="card2-text">保存した物件から比較を再開できます。</div>
+				</a>
+
+				<a class="card2 card2--link" href="/consult/">
+					<div class="card2-title"><strong>質問する</strong></div>
+					<div class="card2-text">フォームで気軽に相談できます。</div>
+				</a>
+			</div>
+			<!-- /wp:html -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"metadata":{"name":"お気に入り物件"},"className":"mypage-favorites","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group mypage-favorites" id="favorites">
+			<!-- wp:group {"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+			<div class="wp-block-group">
+				<!-- wp:heading {"level":3} -->
+				<h3 class="wp-block-heading">お気に入り物件</h3>
+				<!-- /wp:heading -->
+
+				<!-- wp:paragraph -->
+				<p class="mypage-favorites__sub">保存した物件から、比較を再開できます。</p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:group {"className":"ovl-favorites-wrap"} -->
+			<div class="wp-block-group ovl-favorites-wrap">
+				<!-- wp:shortcode -->
+				[ovl_favorites]
+				<!-- /wp:shortcode -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"metadata":{"name":"アカウント・設定"},"className":"mypage-account","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group mypage-account">
+			<!-- wp:heading {"level":3} -->
+			<h3 class="wp-block-heading">アカウント・設定</h3>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p class="mypage-account__lead">登録情報の変更や、通知設定、ログアウトはこちらから。</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:html -->
+			<div class="card2-list card2-list--2col mypage-account__grid">
+				<a class="card2 card2--link" href="/personal_information/">
+					<div class="card2-title"><strong>会員情報の確認</strong></div>
+					<div class="card2-text">氏名・メール・投資目的などを確認できます。</div>
+				</a>
+
+				<a class="card2 card2--link" href="/personal_information/?a=edit">
+					<div class="card2-title"><strong>会員情報を編集</strong></div>
+					<div class="card2-text">登録情報を編集できます。</div>
+				</a>
+
+				<a class="card2 card2--link" href="/personal_information/?a=pwdchange">
+					<div class="card2-title"><strong>パスワードを変更</strong></div>
+					<div class="card2-text">パスワード変更画面を開きます。</div>
+				</a>
+			</div>
+			<!-- /wp:html -->
+
+			<!-- wp:group {"className":"mypage-account__logout","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group mypage-account__logout">
+			</div>
+			<!-- /wp:group -->
+
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 
