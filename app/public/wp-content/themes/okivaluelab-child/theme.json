@@ -5,12 +5,30 @@
     {
       "name": "property-archive",
       "title": "Property Archive Page",
-      "postTypes": ["page"]
+      "postTypes": [
+        "page"
+      ]
+    },
+    {
+      "name": "investment",
+      "title": "Investment Page",
+      "postTypes": [
+        "page"
+      ]
+    },
+    {
+      "name": "page-profile",
+      "title": "Profile Page",
+      "postTypes": [
+        "page"
+      ]
     },
     {
       "name": "property-card",
       "title": "Property Card (Latest 3)",
-      "postTypes": ["page"]
+      "postTypes": [
+        "page"
+      ]
     }
   ],
   "templateParts": [

@@ -631,6 +631,7 @@ class ReportHelper
                     ->withCount([
                         'submissions' => function ($q) use ($startDate, $endDate) {
                             $q->whereBetween('created_at', [$startDate, $endDate]);
+                            $q->whereNotIn('status', ['trashed', 'spam']);
                         }
                     ])
                     ->orderBy('submissions_count', 'DESC')

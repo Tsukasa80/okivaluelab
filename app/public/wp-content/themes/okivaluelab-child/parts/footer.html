@@ -1,0 +1,105 @@
+<!-- wp:group {"tagName":"footer","className":"site-footer","layout":{"type":"default"}} -->
+<footer class="wp-block-group site-footer">
+
+  <!-- wp:group {"className":"container","layout":{"type":"default"}} -->
+  <div class="wp-block-group container">
+
+    <!-- 上段：ロゴとCTA -->
+    <!-- wp:group {"className":"ovl-footer-top","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+    <div class="wp-block-group ovl-footer-top">
+
+      <!-- wp:group {"className":"ovl-footer-brand","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+      <div class="wp-block-group ovl-footer-brand">
+        <!-- wp:site-logo {"width":140,"shouldSyncIcon":true,"className":"site-logo"} /-->
+        <!-- wp:site-title {"level":2,"isLink":true,"className":"screen-reader-text"} /-->
+      </div>
+      <!-- /wp:group -->
+
+      <nav class="ovl-footer-cta-nav" aria-label="主要なアクション">
+        <!-- wp:buttons {"className":"ovl-footer-cta","layout":{"type":"flex","justifyContent":"right","flexWrap":"wrap"}} -->
+        <div class="wp-block-buttons ovl-footer-cta">
+
+          <!-- wp:button {"url":"https://www.instagram.com/","className":"ovl-footer-cta--tertiary","fontSize":"small"} -->
+          <div class="wp-block-button ovl-footer-cta--tertiary has-small-font-size"><a
+              class="wp-block-button__link wp-element-button" href="https://www.instagram.com/" target="_blank"
+              rel="noopener noreferrer">Instagram</a></div>
+          <!-- /wp:button -->
+
+          <!-- wp:button {"url":"/member-register/","className":"is-style-outline","fontSize":"small"} -->
+          <div class="wp-block-button is-style-outline has-small-font-size"><a
+              class="wp-block-button__link wp-element-button" href="/member-register/">無料会員登録</a></div>
+          <!-- /wp:button -->
+
+          <!-- wp:button {"url":"/member-consult/","className":"is-style-outline","fontSize":"small"} -->
+          <div class="wp-block-button is-style-outline has-small-font-size"><a
+              class="wp-block-button__link wp-element-button" href="/member-consult/">お問い合わせ</a></div>
+          <!-- /wp:button -->
+
+        </div>
+        <!-- /wp:buttons -->
+      </nav>
+
+    </div>
+    <!-- /wp:group -->
+
+    <!-- 中段：リンクナビゲーション -->
+    <nav class="ovl-footer-nav-wrap" aria-label="フッターサイトマップ">
+      <div class="ovl-footer-nav">
+
+        <div class="ovl-footer-nav-col">
+          <!-- wp:heading {"level":3} -->
+          <h3 class="wp-block-heading">読む</h3>
+          <!-- /wp:heading -->
+          <ul class="ovl-footer-links">
+            <li><a href="/post-list/">記事一覧</a></li>
+          </ul>
+        </div>
+
+        <div class="ovl-footer-nav-col">
+          <!-- wp:heading {"level":3} -->
+          <h3 class="wp-block-heading">投資ガイド</h3>
+          <!-- /wp:heading -->
+          <ul class="ovl-footer-links">
+            <li><a href="/investment/">不動産投資の土台となる判断軸</a></li>
+            <li><a href="/okinawa-investment/">沖縄不動産投資の判断ポイント</a></li>
+            <li><a href="/chunanbu-investment/">沖縄中南部の立地を見極める</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </nav>
+
+    <!-- 下段：コピーライトと法的リンク -->
+    <div class="ovl-footer-bottom">
+
+      <div class="ovl-footer-copy">
+        <p>© <span class="ovl-footer-year">2026</span> ValueLab OKINAWA</p>
+      </div>
+
+      <div class="ovl-footer-bottom__right">
+        <nav class="ovl-footer-legal" aria-label="リーガルリンク">
+          <a href="/profile/">運営者情報</a>
+          <a href="/privacy-policy/">プライバシーポリシー</a>
+          <a href="/terms/">利用規約</a>
+        </nav>
+        <a class="ovl-footer-to-top" href="#" aria-label="ページの先頭へ戻る">上に戻る</a>
+      </div>
+
+    </div>
+
+    <script>
+      (() => {
+        const y = document.querySelector('.ovl-footer-year');
+        if (y) y.textContent = String(new Date().getFullYear());
+
+        // スムーススクロール（上に戻る）
+        document.querySelector('.ovl-footer-to-top')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      })();
+    </script>
+
+  </div>
+</footer>
+<!-- /wp:group -->

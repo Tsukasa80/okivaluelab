@@ -159,7 +159,7 @@ class WP_Members_Admin_API {
 		add_action( 'wpmem_admin_do_tab',             array( 'WP_Members_Admin_Tab_Dialogs',    'do_tab' ), 10 );
 		add_action( 'wpmem_admin_do_tab',             array( 'WP_Members_Admin_Tab_Emails',     'do_tab' ), 15 );
 		add_action( 'wpmem_admin_do_tab',             array( 'WP_Members_Admin_Tab_Shortcodes', 'do_tab' ), 16 );
-		add_action( 'wpmem_admin_do_tab',             array( 'WP_Members_Admin_Tab_About',      'do_tab' ), 17 );
+		add_action( 'wpmem_admin_do_tab',             array( 'WP_Members_Admin_Tab_About',      'do_tab' ), 99 );
 		
 		// If user has a role that cannot edit users, set profile actions for non-admins.
 		
@@ -202,6 +202,8 @@ class WP_Members_Admin_API {
 			add_action( 'manage_posts_custom_column', array( 'WP_Members_Admin_Posts', 'columns_content' ), 10, 2 );
 			add_filter( 'manage_pages_columns',       array( 'WP_Members_Admin_Posts', 'columns'     ) );
 			add_action( 'manage_pages_custom_column', array( 'WP_Members_Admin_Posts', 'columns_content' ), 10, 2 );
+			add_action( 'restrict_manage_posts',      array( 'WP_Members_Admin_Posts', 'filter_by_restriction' ) );
+			add_action( 'pre_get_posts',              array( 'WP_Members_Admin_Posts', 'restriction_filter'    ) );
 			add_action( 'admin_footer-edit.php',      array( 'WP_Members_Admin_Posts', 'bulk_action' ) );
 			add_action( 'load-edit.php',              array( 'WP_Members_Admin_Posts', 'page_load'   ) );
 			add_action( 'admin_notices',              array( 'WP_Members_Admin_Posts', 'notices'     ) );
@@ -222,6 +224,9 @@ class WP_Members_Admin_API {
 		}
 
 		add_action( 'current_screen', array( $this, 'check_user_folders_for_index' ) );
+
+		// Check for any upgrade notices.
+		add_filter( 'wpmem_admin_notices', array( $this, 'check_for_upgrade_notices' ) );
 
 	} // End of load_hooks()
 
@@ -244,10 +249,18 @@ class WP_Members_Admin_API {
 	 */
 	function do_admin_notices() {
 		global $wpmem;
+		/**
+		 * Filter admin notices.
+		 * 
+		 * @since 3.5.5
+		 * 
+		 * @param array $wpmem->admin_notices Array of admin notices to display.
+		 */
+		$wpmem->admin_notices = apply_filters( 'wpmem_admin_notices', $wpmem->admin_notices );
 		if ( $wpmem->admin_notices ) {
 			foreach ( $wpmem->admin_notices as $key => $value ) {
-				echo '<div class="notice notice-' . $value['type'] . ' is-dismissible"> 
-					<p><strong>' . $value['notice'] . '</strong></p>
+				echo '<div class="notice notice-' . esc_attr( $value['type'] ) . ' is-dismissible"> 
+					<p><strong>' . wp_kses_post( $value['notice'] ) . '</strong></p>
 				</div>';
 				
 			}
@@ -392,7 +405,6 @@ class WP_Members_Admin_API {
 			'dialogs'    => esc_html__( 'Dialogs', 'wp-members' ),
 			'emails'     => esc_html__( 'Emails', 'wp-members' ),
 			'shortcodes' => esc_html__( 'Shortcodes', 'wp-members' ),
-			'about'      => esc_html__( 'About WP-Members', 'wp-members' )
 		);
 	}
 
@@ -699,7 +711,7 @@ class WP_Members_Admin_API {
 
 			$upload_vars  = wp_upload_dir( null, false );
 			$wpmem_base_dir = trailingslashit( trailingslashit( $upload_vars['basedir'] ) . wpmem_get_upload_base() );
-			$wpmem_user_files_dir = $wpmem_base_dir . 'user_files/';
+			$wpmem_user_files_dir = $wpmem_base_dir . trailingslashit( wpmem_get_file_dir_hash() );
 
 			if ( file_exists( $wpmem_user_files_dir ) ) {
 				// If there is a user file dir, check/self-heal htaccess/index files.
@@ -720,6 +732,35 @@ class WP_Members_Admin_API {
 				) );
 			}
 		}
+	}
+
+	function check_for_upgrade_notices( $notices ) {
+
+		// Check for deprecated folder system.
+		$uploads = wp_upload_dir();
+		$deprecated_folder = trailingslashit( $uploads['basedir'] ) . 'wpmembers/user_files';
+		if ( is_dir( $deprecated_folder ) ) {
+			$notice_dismissed = get_option( 'wpmem_dismiss_filesystem_upgrade_notice' );
+			if ( ! $notice_dismissed ) {
+				$notices['deprecated_foldersystem'] = array(
+					'notice' => __( 'The /wpmembers/user_files/ folder is deprecated. Please <a href="' . esc_url( trailingslashit( admin_url() ) . 'options-general.php?page=wpmem-settings&tab=filesystem-upgrade' ) . '">go to the settings page</a> to either upgrade or permanently remove this message.', 'wp-members' ),
+					'type'   => 'warning',
+				);
+			}
+			if ( 'update_filesystem' == wpmem_get( 'wpmem_admin_a' ) ) {
+				if ( false == wpmem_get( 'wpmem_dismiss_filesystem_upgrade_notice' ) ) {
+					$notices['deprecated_foldersystem'] = array(
+						'notice' => __( 'The /wpmembers/user_files/ folder is deprecated. Please <a href="' . esc_url( trailingslashit( admin_url() ) . 'options-general.php?page=wpmem-settings&tab=filesystem-upgrade' ) . '">go to the settings page</a> to either upgrade or permanently remove this message.', 'wp-members' ),
+						'type'   => 'warning',
+					);
+				} elseif ( 1 == wpmem_get( 'wpmem_dismiss_filesystem_upgrade_notice' ) ) {
+					unset( $notices['deprecated_foldersystem'] );
+				}
+			}
+		}
+
+		// Return any notices.
+		return $notices;
 	}
 
 } // End of WP_Members_Admin_API class.

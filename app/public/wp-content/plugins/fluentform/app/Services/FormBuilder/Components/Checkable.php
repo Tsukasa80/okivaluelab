@@ -97,8 +97,8 @@ class Checkable extends BaseComponent
 //        $elMarkup .= '<fieldset role="group"  style="border: none!important;margin: 0!important;padding: 0!important;background-color: transparent!important;box-shadow: none!important;outline: none!important; min-inline-size: 100%;" aria-labelledby="legend_' . $legendId . '">';
 //
 //        $elMarkup .= '<legend  style="  position: absolute;width: 1px;height: 1px;padding: 0;margin: 0;overflow: hidden;clip: rect(0, 0, 0, 0);border: 0;"  role="heading" id="legend_' . $legendId . '" class="ff-sreader-only">' . esc_attr($this->removeShortcode($data['settings']['label'])) . '</legend>';
-    
-    
+
+        $otherInputHtml = '';
         foreach ($formattedOptions as $option) {
             $displayType = isset($data['settings']['display_type']) ? ' ff-el-form-check-' . $data['settings']['display_type'] : '';
             $parentClass = 'ff-el-form-check' . esc_attr($displayType) . '';
@@ -147,7 +147,7 @@ class Checkable extends BaseComponent
             $isOtherOption = ArrayHelper::get($option, 'is_other', false);
             $otherClass = $isOtherOption ? ' ff-other-option' : '';
 
-            $elMarkup .= "<label class='ff-el-form-check-label{$otherClass}'><input {$disabled} {$atts} id='{$id}' aria-label='{$this->removeShortcode($ariaLabel)}' aria-invalid='false' aria-required={$ariaRequired}> <span>" . $label . '</span></label>';
+            $elMarkup .= "<label class='ff-el-form-check-label{$otherClass}' for='{$id}'><input {$disabled} {$atts} id='{$id}' aria-label='{$this->removeShortcode($ariaLabel)}' aria-invalid='false' aria-required={$ariaRequired}> <span>" . $label . '</span></label>';
             
             // Add text input for "Other" option
             if ($isOtherOption && defined('FLUENTFORMPRO')) {
@@ -156,9 +156,10 @@ class Checkable extends BaseComponent
                 $otherInputName = $fieldName . '__ff_other_input__';
                 $otherValue = '';
 
-                $elMarkup .= "<div class='ff-other-input-wrapper' style='display: none; margin-top: 8px;' data-field='{$fieldName}'>";
-                $elMarkup .= "<input type='text' name='" . esc_attr($otherInputName) . "' class='ff-el-form-control' placeholder='" . esc_attr($otherPlaceholder) . "' value='" . esc_attr($otherValue) . "'>";
-                $elMarkup .= "</div>";
+                $marginTop = $hasImageOption ? '20px' : '8px';
+                $otherInputHtml .= "<div class='ff-other-input-wrapper' style='display: none; margin-top: {$marginTop};' data-field='{$fieldName}'>";
+                $otherInputHtml .= "<input type='text' name='" . esc_attr($otherInputName) . "' class='ff-el-form-control' placeholder='" . esc_attr($otherPlaceholder) . "' value='" . esc_attr($otherValue) . "'>";
+                $otherInputHtml .= "</div>";
             }
             
             $elMarkup .= '</div>';
@@ -166,6 +167,9 @@ class Checkable extends BaseComponent
 
         if ($hasImageOption) {
             $elMarkup .= '</div>';
+        }
+        if ($otherInputHtml) {
+            $elMarkup .= $otherInputHtml;
         }
 //        $elMarkup .= '</fieldset>';
 

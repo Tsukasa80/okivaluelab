@@ -276,19 +276,11 @@ class FormHandler
         );
 
         if ('samePage' == $confirmation['redirectTo']) {
-    
-            $confirmation['messageToShow'] = apply_filters_deprecated(
-                'fluentform_submission_message_parse',
-                [
-                    $confirmation['messageToShow'],
-                    $insertId,
-                    $formData,
-                    $form
-                ],
-                FLUENTFORM_FRAMEWORK_UPGRADE,
-                'fluentform/submission_message_parse',
-                'Use fluentform/submission_message_parse instead of fluentform_submission_message_parse.'
-            );
+            
+            $confirmation['messageToShow'] = fluentform_sanitize_html($confirmation['messageToShow']);
+            
+            $confirmation['messageToShow'] = do_shortcode($confirmation['messageToShow']);
+            
             $confirmation['messageToShow'] = apply_filters('fluentform/submission_message_parse',
                 $confirmation['messageToShow'], $insertId, $formData, $form);
 
@@ -304,7 +296,7 @@ class FormHandler
             $message = $message ? $message : 'The form has been successfully submitted.';
 
             $returnData = [
-                'message' => do_shortcode($message),
+                'message' => $message,
                 'action'  => $confirmation['samePageFormBehavior'],
             ];
         } else {

@@ -1,0 +1,78 @@
+<!--
+  Title: Member Register Header
+  Slug: member-register
+  Description: /member-register/ 用のヘッダー（Block Visibilityで出し分けする前提のベース）。
+-->
+
+<!-- wp:group {"tagName":"header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<header class="wp-block-group site-header">
+
+  <!-- ロゴ（Hello, ユーザー名） -->
+  <!-- wp:group {"layout":{"type":"constrained"}} -->
+  <div class="wp-block-group header-inner">
+    <!-- wp:site-logo {"width":160,"shouldSyncIcon":true,"className":"site-logo"} /-->
+    <!-- wp:site-title {"level":2,"isLink":true,"className":"screen-reader-text"} /-->
+    <!-- wp:paragraph -->
+    <p class="screen-reader-text">会員ナビゲーション</p>
+    <!-- /wp:paragraph -->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- ナビ＋ログアウト -->
+  <!-- wp:group {"className":"header-nav-auth","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
+  <div class="wp-block-group header-nav-auth">
+    <!-- wp:navigation {"ariaLabel":"Primary Navigation (Member)","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"}} -->
+    <!-- wp:navigation-link {"label":"トップ","url":"/","className":"nav-icon nav-icon--home"} /-->
+    <!-- wp:navigation-link {"label":"投資ガイド","url":"/investment/","className":"nav-icon nav-icon--investment"} /-->
+    <!-- wp:navigation-link {"label":"限定物件","url":"/property_list/","className":"nav-icon nav-icon--property"} /-->
+    <!-- wp:navigation-link {"label":"質問する","url":"/member-consult/","className":"nav-icon nav-icon--consult"} /-->
+    <!-- /wp:navigation -->
+
+    <!-- wp:group {"className":"header-auth","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+    <div class="wp-block-group header-auth">
+      <!-- wp:paragraph {"className":"header-auth__link nav-icon nav-icon--mypage"} -->
+      <p class="header-auth__link nav-icon nav-icon--mypage"><a href="/members/">マイページ</a></p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:group {"className":"header-auth__link nav-icon nav-icon--logout","layout":{"type":"constrained"}} -->
+      <div class="wp-block-group header-auth__link nav-icon nav-icon--logout">
+        <!-- wp:shortcode -->
+        [ovl_logout_link redirect="/"]
+        <!-- /wp:shortcode -->
+      </div>
+      <!-- /wp:group -->
+    </div>
+    <!-- /wp:group -->
+  </div>
+  <!-- /wp:group -->
+
+</header>
+<!-- /wp:group -->
+
+<!-- ★Block Visibility 設定ガイド：このヘッダーを「ログイン済み & role=member の時のみ表示」に設定 -->
+
+<!-- wp:group {"tagName":"header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<header class="wp-block-group site-header">
+
+  <!-- ロゴ -->
+  <!-- wp:site-logo {"width":160,"shouldSyncIcon":true,"className":"site-logo"} /-->
+  <!-- wp:site-title {"level":2,"isLink":true,"className":"screen-reader-text"} /-->
+
+  <!-- ナビ（ゲスト用） -->
+  <!-- wp:group {"className":"header-nav-auth","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
+  <div class="wp-block-group header-nav-auth">
+    <!-- wp:navigation {"ariaLabel":"Primary Navigation (Guest)","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"}} -->
+    <!-- wp:navigation-link {"label":"トップ","url":"/","className":"nav-icon nav-icon--home"} /-->
+    <!-- wp:navigation-link {"label":"投資ガイド","url":"/investment/","className":"nav-icon nav-icon--investment"} /-->
+    <!-- wp:navigation-link {"label":"限定物件","url":"/property_list/","className":"nav-icon nav-icon--property"} /-->
+    <!-- wp:navigation-link {"label":"質問する","url":"/member-consult/","className":"nav-icon nav-icon--consult"} /-->
+    <!-- wp:navigation-link {"label":"会員登録","url":"/member-register/","className":"nav-icon nav-icon--register"} /-->
+    <!-- wp:navigation-link {"label":"ログイン","url":"/members/","className":"nav-icon nav-icon--login"} /-->
+    <!-- /wp:navigation -->
+  </div>
+  <!-- /wp:group -->
+
+</header>
+<!-- /wp:group -->
+
+<!-- ★Block Visibility 設定ガイド：このヘッダーを「未ログインの時のみ表示」に設定 -->

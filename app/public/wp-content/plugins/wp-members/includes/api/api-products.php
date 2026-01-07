@@ -33,13 +33,15 @@ function wpmem_get_product_post_list( $product_key ) {
  *
  * @since 3.4.5
  *
- * @global  stdClass  $wpmem
- * @param   string    $membership_key
- * @return  array
+ * @global  stdClass      $wpmem
+ * @param   string        $membership_key
+ * @param   string        $order_by title|date
+ * @param   string        $order asc|desc
+ * @return  array|boolean $post_ids if not empty, otherwise false
  */
-function wpmem_get_membership_post_list( $membership_key ) {
+function wpmem_get_membership_post_list( $membership_key, $order_by = false, $order = 'ASC'  ) {
 	global $wpmem;
-	return $wpmem->membership->get_all_posts( $membership_key );
+	return $wpmem->membership->get_all_posts( $membership_key, $order_by, $order  );
 }
 
 /**
@@ -164,12 +166,13 @@ function wpmem_get_membership_slug( $membership_id ) {
  * Get the role required by a membership (if any).
  * 
  * @since 3.5.0
+ * @since 3.5.5 Return false if no role.
  * 
  * @param  string  $slug  The membership slug (meta key).
  */
 function wpmem_get_membership_role( $membership_slug ) {
 	global $wpmem;
-	return ( isset( $wpmem->membership->memberships[ $membership_slug ]['role'] ) ) ? $wpmem->membership->memberships[ $membership_slug ]['role'] : '';
+	return ( isset( $wpmem->membership->memberships[ $membership_slug ]['role'] ) ) ? $wpmem->membership->memberships[ $membership_slug ]['role'] : false;
 }
 
 /**

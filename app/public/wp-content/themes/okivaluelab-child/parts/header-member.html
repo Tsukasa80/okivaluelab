@@ -4,7 +4,8 @@
   <!-- ロゴ（Hello, ユーザー名） -->
   <!-- wp:group {"layout":{"type":"constrained"}} -->
   <div class="wp-block-group header-inner">
-    <!-- wp:site-title {"level":2,"isLink":true} /-->
+    <!-- wp:site-logo {"width":160,"shouldSyncIcon":true,"className":"site-logo"} /-->
+    <!-- wp:site-title {"level":2,"isLink":true,"className":"screen-reader-text"} /-->
     <!-- wp:paragraph -->
     <p class="screen-reader-text">会員ナビゲーション</p>
     <!-- /wp:paragraph -->
@@ -15,20 +16,25 @@
   <!-- wp:group {"className":"header-nav-auth","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
   <div class="wp-block-group header-nav-auth">
     <!-- wp:navigation {"ariaLabel":"Primary Navigation (Member)","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"}} -->
-    <!-- wp:navigation-link {"label":"トップ","url":"/"} /-->
-    <!-- wp:navigation-link {"label":"限定物件","url":"/property_list/"} /-->
-    <!-- wp:navigation-link {"label":"質問する","url":"/member-consult/"} /-->
+    <!-- wp:navigation-link {"label":"トップ","url":"/","className":"nav-icon nav-icon--home"} /-->
+    <!-- wp:navigation-link {"label":"投資ガイド","url":"/investment/","className":"nav-icon nav-icon--investment"} /-->
+    <!-- wp:navigation-link {"label":"限定物件","url":"/property_list/","className":"nav-icon nav-icon--property"} /-->
+    <!-- wp:navigation-link {"label":"質問する","url":"/member-consult/","className":"nav-icon nav-icon--consult"} /-->
     <!-- /wp:navigation -->
 
     <!-- wp:group {"className":"header-auth","layout":{"type":"flex","flexWrap":"nowrap"}} -->
     <div class="wp-block-group header-auth">
-      <!-- wp:paragraph {"className":"header-auth__link"} -->
-      <p class="header-auth__link"><a href="/members/">マイページ</a></p>
+      <!-- wp:paragraph {"className":"header-auth__link nav-icon nav-icon--mypage"} -->
+      <p class="header-auth__link nav-icon nav-icon--mypage"><a href="/members/">マイページ</a></p>
       <!-- /wp:paragraph -->
 
-      <!-- wp:shortcode -->
-      [ovl_logout_link class="header-auth__link" redirect="/"]
-      <!-- /wp:shortcode -->
+      <!-- wp:group {"className":"header-auth__link nav-icon nav-icon--logout","layout":{"type":"constrained"}} -->
+      <div class="wp-block-group header-auth__link nav-icon nav-icon--logout">
+        <!-- wp:shortcode -->
+        [ovl_logout_link redirect="/"]
+        <!-- /wp:shortcode -->
+      </div>
+      <!-- /wp:group -->
     </div>
     <!-- /wp:group -->
   </div>

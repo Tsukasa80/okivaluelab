@@ -252,14 +252,6 @@ if ( ! function_exists( 'ovl_render_property_cards_shortcode' ) ) {
 					<span>最大価格（万円）</span>
 					<input type="number" id="property-max-price" name="max_price" inputmode="numeric" min="0" step="1" value="<?php echo esc_attr( $max_price ); ?>">
 				</label>
-				<label for="property-min-yield">
-					<span>最小利回り（%）</span>
-					<input type="number" id="property-min-yield" name="min_yield" inputmode="decimal" min="0" step="0.1" value="<?php echo esc_attr( $min_yield ); ?>">
-				</label>
-				<label for="property-max-yield">
-					<span>最大利回り（%）</span>
-					<input type="number" id="property-max-yield" name="max_yield" inputmode="decimal" min="0" step="0.1" value="<?php echo esc_attr( $max_yield ); ?>">
-				</label>
 					<label for="property-city">
 						<span>市町村</span>
 						<select id="property-city" name="city">
@@ -275,6 +267,14 @@ if ( ! function_exists( 'ovl_render_property_cards_shortcode' ) ) {
 							<?php endforeach; ?>
 						</select>
 					</label>
+				<label for="property-min-yield">
+					<span>最小利回り（%）</span>
+					<input type="number" id="property-min-yield" name="min_yield" inputmode="decimal" min="0" step="0.1" value="<?php echo esc_attr( $min_yield ); ?>">
+				</label>
+				<label for="property-max-yield">
+					<span>最大利回り（%）</span>
+					<input type="number" id="property-max-yield" name="max_yield" inputmode="decimal" min="0" step="0.1" value="<?php echo esc_attr( $max_yield ); ?>">
+				</label>
 				<div class="property-archive__filter-actions">
 					<button type="submit" class="button">絞り込み</button>
 					<a class="button button-reset" href="<?php echo esc_url( remove_query_arg( [ 'min_price', 'max_price', 'city', 'min_yield', 'max_yield', 'paged' ] ) ); ?>">条件クリア</a>

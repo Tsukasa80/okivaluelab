@@ -269,6 +269,7 @@ class WP_Members_Shortcodes {
 	 * @since 3.2.0 Added attributes for meta key/value pairs.
 	 * @since 3.2.3 Added product attribute.
 	 * @since 3.3.0 Added compare attribute for meta key/value compare (=|!=).
+	 * @since 3.5.5 Added attribute for display on various states of [wpmem_profile].
 	 *
 	 * @global object $wpmem The WP_Members object.
 	 *
@@ -338,7 +339,7 @@ class WP_Members_Shortcodes {
 
 				// If there is a status attribute of "sub" and the user is logged in.
 				if ( ( isset( $sanitized_atts['status'] ) ) && $sanitized_atts['status'] == 'sub' ) {
-					if ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 ) {	
+					if ( wpmem_is_exp_enabled() && $wpmem->use_exp == 1 ) {	
 						if ( ! wpmem_is_user_current() ) {
 							$do_return = true;
 						} elseif ( $sanitized_atts['msg'] == "true" ) {
@@ -399,18 +400,22 @@ class WP_Members_Shortcodes {
 				}
 
 				// Prevents display if the current page is the user profile and an action is being handled.
-				if ( ( wpmem_current_url( true, false ) == wpmem_profile_url() ) && isset( $_GET['a'] ) ) {
-					$do_return = false;
+				if ( ( wpmem_current_url( true, false ) == wpmem_profile_url() ) ) {
+
+					if ( isset( $_GET['a'] ) ) {
+						$do_return = false;
+					}
 				}
 
 				// Adds optional wrapper.
-				if ( isset( $sanitized_atts['wrap_id'] ) || isset( $sanitized_atts['wrap_class'] ) ) {
-					$tag = 'div';
+				if ( isset( $sanitized_atts['wrap_id'] ) || isset( $sanitized_atts['wrap_class'] ) || isset( $sanitized_atts['wrap_tag'] ) ) {
+					$tag = ( isset( $sanitized_atts['wrap_tag'] ) ) ? $sanitized_atts['wrap_tag'] : 'div';
 					$wrapper  = '<' . esc_attr( $tag );
 					$wrapper .= ( isset( $sanitized_atts['wrap_id']    ) ) ? ' id="'    . esc_attr( $sanitized_atts['wrap_id'] )    . '"' : '';
 					$wrapper .= ( isset( $sanitized_atts['wrap_class'] ) ) ? ' class="' . esc_attr( $sanitized_atts['wrap_class'] ) . '"' : '';
 					$wrapper .= '>';
 					$content = $wrapper . $content . '</' . esc_attr( $tag ) . '>';
+					$content = wp_kses_post( $content );
 				}
 
 			}
@@ -1081,7 +1086,7 @@ class WP_Members_Shortcodes {
 	 * @since 3.1.7
 	 * @since 3.2.0 Moved to WP_Members_Shortcodes::login_link().
 	 * @since 3.4.6 Using wpmem_get_login_link() and wpmem_get_reg_link() adds id and class attributes to HTML tag.
-	 * @since 3.5.4.2 Only allow specific HTML tag attributes in the shortcode.
+	 * @since 3.5.5 Only allow specific HTML tag attributes in the shortcode.
 	 *
 	 * @param  array  $atts {
 	 *     The shortcode attributes.
@@ -1511,7 +1516,7 @@ class WP_Members_Shortcodes {
 					'after_wrapper'  => '',
 				);
 
-				if ( defined( 'WPMEM_EXP_MODULE' ) && $wpmem->use_exp == 1 && function_exists( 'wpmem_user_page_detail' ) ) {
+				if ( wpmem_is_exp_enabled() && $wpmem->use_exp == 1 && function_exists( 'wpmem_user_page_detail' ) ) {
 					$arr['rows'][] = wpmem_user_page_detail();
 				}
 
