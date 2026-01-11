@@ -14,8 +14,6 @@ if ( ! function_exists( 'ovl_render_property_cards_shortcode' ) ) {
 	 * @return string
 	 */
 	function ovl_render_property_cards_shortcode( array $atts = [] ): string {
-		error_log('[OVL] shortcode executed');
-
 		wp_enqueue_script( 'ovl-favorites' );
 
 		$atts = shortcode_atts(
@@ -248,10 +246,18 @@ if ( ! function_exists( 'ovl_render_property_cards_shortcode' ) ) {
 					<span>最小価格（万円）</span>
 					<input type="number" id="property-min-price" name="min_price" inputmode="numeric" min="0" step="1" value="<?php echo esc_attr( $min_price ); ?>">
 				</label>
-				<label for="property-max-price">
-					<span>最大価格（万円）</span>
-					<input type="number" id="property-max-price" name="max_price" inputmode="numeric" min="0" step="1" value="<?php echo esc_attr( $max_price ); ?>">
-				</label>
+					<label for="property-max-price">
+						<span>最大価格（万円）</span>
+						<input type="number" id="property-max-price" name="max_price" inputmode="numeric" min="0" step="1" value="<?php echo esc_attr( $max_price ); ?>">
+					</label>
+					<label for="property-min-yield">
+						<span>最小利回り（%）</span>
+						<input type="number" id="property-min-yield" name="min_yield" inputmode="decimal" min="0" step="0.1" value="<?php echo esc_attr( $min_yield ); ?>">
+					</label>
+					<label for="property-max-yield">
+						<span>最大利回り（%）</span>
+						<input type="number" id="property-max-yield" name="max_yield" inputmode="decimal" min="0" step="0.1" value="<?php echo esc_attr( $max_yield ); ?>">
+					</label>
 					<label for="property-city">
 						<span>市町村</span>
 						<select id="property-city" name="city">
@@ -267,19 +273,11 @@ if ( ! function_exists( 'ovl_render_property_cards_shortcode' ) ) {
 							<?php endforeach; ?>
 						</select>
 					</label>
-				<label for="property-min-yield">
-					<span>最小利回り（%）</span>
-					<input type="number" id="property-min-yield" name="min_yield" inputmode="decimal" min="0" step="0.1" value="<?php echo esc_attr( $min_yield ); ?>">
-				</label>
-				<label for="property-max-yield">
-					<span>最大利回り（%）</span>
-					<input type="number" id="property-max-yield" name="max_yield" inputmode="decimal" min="0" step="0.1" value="<?php echo esc_attr( $max_yield ); ?>">
-				</label>
-				<div class="property-archive__filter-actions">
-					<button type="submit" class="button">絞り込み</button>
-					<a class="button button-reset" href="<?php echo esc_url( remove_query_arg( [ 'min_price', 'max_price', 'city', 'min_yield', 'max_yield', 'paged' ] ) ); ?>">条件クリア</a>
-				</div>
-			</form>
+					<div class="property-archive__filter-actions">
+						<button type="submit" class="button">絞り込み</button>
+						<a class="button button-reset" href="<?php echo esc_url( remove_query_arg( [ 'min_price', 'max_price', 'city', 'min_yield', 'max_yield', 'paged' ] ) ); ?>">条件クリア</a>
+					</div>
+				</form>
 			<?php if ( $query->have_posts() ) : ?>
 				<div class="property-archive__grid">
 					<?php
@@ -388,25 +386,29 @@ if ( ! function_exists( 'ovl_render_property_cards_shortcode' ) ) {
 									<?php if ( $is_new ) : ?>
 										<span class="ovl-property-card__badge is-new">NEW</span>
 									<?php endif; ?>
-									<?php if ( ! $is_member ) : ?>
-										<span class="ovl-property-card__badge is-locked">会員限定</span>
-									<?php endif; ?>
-								</a>
-								<div class="ovl-property-card__footer ovl-property-card__footer--media">
-									<a class="ovl-property-card__cta" href="<?php echo esc_url( $link ); ?>" <?php echo $is_member ? '' : 'rel="nofollow"'; ?>>
-										<?php echo $is_member ? '物件詳細' : 'ログインして詳細'; ?>
+								<?php if ( ! $is_member ) : ?>
+									<span class="ovl-property-card__badge is-locked">会員限定</span>
+								<?php endif; ?>
 									</a>
+									<?php if ( ! $is_member ) : ?>
+										<div class="ovl-property-card__auth-links">
+											<a href="<?php echo esc_url( $link ); ?>" rel="nofollow">ログイン</a>
+											<span class="ovl-property-card__auth-sep" aria-hidden="true">｜</span>
+											<a href="<?php echo esc_url( $register_url ); ?>" rel="nofollow">新規会員登録</a>
+										</div>
+									<?php endif; ?>
 								</div>
-							</div>
 
 							<div class="ovl-property-card__body">
 								<div class="ovl-property-card__head">
 									<div class="ovl-property-card__labels">
-										<span class="ovl-property-card__badge-pill"><?php echo esc_html( $status_label ); ?></span>
-										<?php if ( $is_new ) : ?>
-											<span class="ovl-property-card__badge-pill is-accent">新着</span>
-										<?php endif; ?>
-									</div>
+											<?php if ( '公開中' !== $status_label ) : ?>
+												<span class="ovl-property-card__badge-pill"><?php echo esc_html( $status_label ); ?></span>
+											<?php endif; ?>
+											<?php if ( $is_new ) : ?>
+												<span class="ovl-property-card__badge-pill is-accent">新着</span>
+											<?php endif; ?>
+										</div>
 									<h3 class="ovl-property-card__title">
 										<a href="<?php echo esc_url( $link ); ?>" <?php echo $is_member ? '' : 'rel="nofollow"'; ?>>
 											<?php the_title(); ?>
@@ -432,29 +434,27 @@ if ( ! function_exists( 'ovl_render_property_cards_shortcode' ) ) {
 													<strong class="ovl-property-card__spec-value"><?php echo esc_html( $spec['value'] ); ?></strong>
 												</div>
 											<?php endforeach; ?>
-										</div>
-									<?php endforeach; ?>
-								</div>
+									</div>
+								<?php endforeach; ?>
+							</div>
 
-								<div class="ovl-favorite-control">
+								<?php $compact_favorite_label = $is_favorite ? 'お気に入り済み' : 'お気に入り'; ?>
+								<div class="ovl-property-card__actions">
+									<a class="ovl-property-card__cta" href="<?php echo esc_url( $link ); ?>" <?php echo $is_member ? '' : 'rel="nofollow"'; ?>><?php echo $is_member ? '物件詳細' : 'ログインして詳細'; ?></a>
 									<button
 										type="button"
 										class="<?php echo esc_attr( $button_classes ); ?>"
 										data-ovl-fav="1"
 										data-property-id="<?php echo esc_attr( $post_id ); ?>"
 										aria-pressed="<?php echo $is_favorite ? 'true' : 'false'; ?>"
+										aria-label="<?php echo esc_attr( $button_label ); ?>"
 										<?php echo $button_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 									>
 										<span class="ovl-favorite-button__icon" aria-hidden="true">♡</span>
-										<span class="ovl-favorite-button__label"><?php echo esc_html( $button_label ); ?></span>
+										<span class="ovl-favorite-button__label"><?php echo esc_html( $compact_favorite_label ); ?></span>
 									</button>
-									<?php if ( ! $is_member ) : ?>
-										<p class="ovl-favorite-note">
-											<a href="<?php echo esc_url( $link ); ?>">ログイン</a>
-											/ <a href="<?php echo esc_url( $register_url ); ?>">新規会員登録</a>
-										</p>
-									<?php endif; ?>
 								</div>
+
 							</div>
 						</article>
 						<?php
@@ -573,14 +573,8 @@ if ( ! function_exists( 'ovl_property_price_shortcode' ) ) {
 	 * @param array $atts Shortcode attributes.
 	 */
 	function ovl_property_price_shortcode( array $atts = [] ): string {
-		error_log('[PRICE SC] post_id=' . get_the_ID());
-		error_log('[PRICE SC start1]');
-	
 		$post_id = get_the_ID();
-		error_log('[PRICE POST ID] ' . $post_id);
-error_log('[PRICE POST TYPE] ' . get_post_type( $post_id ));
 		if ( ! $post_id || 'property' !== get_post_type( $post_id ) ) {
-		error_log('[PRICE RETURN EARLY]');
 			return '';
 		}
 		$atts = shortcode_atts(
@@ -595,10 +589,8 @@ error_log('[PRICE POST TYPE] ' . get_post_type( $post_id ));
 		);
 
 		$value = $atts['fallback'];
-error_log('[PRICE AUTH] is_member=' . ( is_user_logged_in() ? 'yes' : 'no' ));
 
 		$price_value = ovl_property_get_meta_value( 'price', $post_id );
-		error_log('[PRICE VALUE] ' . print_r($price_value, true));
 
 		$formatted = ovl_property_format_numeric_meta( $price_value, 0 );
 		if ( '' !== $formatted ) {
@@ -625,7 +617,6 @@ if ( ! function_exists( 'ovl_property_yield_shortcode' ) ) {
 	 * @param array $atts Shortcode attributes.
 	 */
 	function ovl_property_yield_shortcode( array $atts = [] ): string {
-		error_log('[YIELD SC] post_id=' . get_the_ID());
 		$post_id = get_the_ID();
 		if ( ! $post_id || 'property' !== get_post_type( $post_id ) ) {
 			return '';

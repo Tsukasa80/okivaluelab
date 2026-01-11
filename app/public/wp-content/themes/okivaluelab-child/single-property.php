@@ -204,6 +204,41 @@ if ( ! function_exists( 'oki_property_append_yen_suffix' ) ) {
   }
 }
 
+if ( ! function_exists( 'oki_property_flatten_text_values' ) ) {
+  function oki_property_flatten_text_values( $value ) {
+    $flattened = [];
+    foreach ( (array) $value as $item ) {
+      if ( is_array( $item ) ) {
+        if ( isset( $item['label'] ) && is_scalar( $item['label'] ) ) {
+          $flattened[] = sanitize_text_field( (string) $item['label'] );
+          continue;
+        }
+        if ( isset( $item['value'] ) && is_scalar( $item['value'] ) ) {
+          $flattened[] = sanitize_text_field( (string) $item['value'] );
+          continue;
+        }
+        $flattened = array_merge( $flattened, oki_property_flatten_text_values( $item ) );
+        continue;
+      }
+      if ( is_object( $item ) ) {
+        if ( method_exists( $item, '__toString' ) ) {
+          $flattened[] = sanitize_text_field( (string) $item );
+        } else {
+          $flattened[] = sanitize_text_field( wp_json_encode( $item ) );
+        }
+        continue;
+      }
+      if ( $item === null ) {
+        continue;
+      }
+      $flattened[] = sanitize_text_field( (string) $item );
+    }
+    return array_values( array_filter( $flattened, static function( $text ) {
+      return '' !== $text;
+    } ) );
+  }
+}
+
 if ( ! function_exists( 'oki_property_plain_value' ) ) {
   function oki_property_plain_value( $field, $fallback = '—' ) {
     if ( ! is_array( $field ) || ! array_key_exists( 'value', $field ) ) {
@@ -226,7 +261,7 @@ if ( ! function_exists( 'oki_property_plain_value' ) ) {
       case 'checkbox':
       case 'radio':
         if ( is_array( $val ) ) {
-          return implode( ' / ', array_map( 'sanitize_text_field', $val ) );
+          return implode( ' / ', oki_property_flatten_text_values( $val ) );
         }
         return sanitize_text_field( (string) $val );
 
@@ -289,7 +324,7 @@ if ( ! function_exists( 'oki_property_plain_value' ) ) {
         }
 
         if ( is_array( $val ) ) {
-          $joined = implode( ' / ', array_map( 'sanitize_text_field', array_map( 'strval', $val ) ) );
+          $joined = implode( ' / ', oki_property_flatten_text_values( $val ) );
           return oki_property_append_yen_suffix( $joined, $name, $label );
         }
 
@@ -304,10 +339,10 @@ get_header(); ?>
 // ブロックテーマのヘッダー領域を再現
 if ( function_exists( 'do_blocks' ) ) {
   echo do_blocks(
-    '<!-- wp:template-part {"slug":"header-member","area":"header"} /-->'
+    '<!-- wp:template-part {"slug":"header","area":"header"} /-->'
   );
 } elseif ( function_exists( 'block_template_part' ) ) {
-  block_template_part( 'header-member' );
+  block_template_part( 'header' );
 }
 ?>
 
@@ -1300,7 +1335,7 @@ if ( function_exists( 'do_blocks' ) ) {
         <?php if ( $has_sidebar ) : ?>
           <aside class="property-entry__side">
             <section id="property-download" class="property-card property-card--sidebar">
-              <h2 class="property-section-title">資料ダウンロード</h2>
+              <h2 class="property-section-title">▼ 物件資料はここから ▼</h2>
               <?php echo $download_button; ?>
             </section>
           </aside>

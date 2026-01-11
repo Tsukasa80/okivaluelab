@@ -1,0 +1,36 @@
+<!-- header（共通テンプレートパーツ） -->
+<!-- wp:template-part {"slug":"header","area":"header"} /-->
+
+<!-- メイン -->
+<!-- wp:group {"tagName":"main","style":{"spacing":{"margin":{"top":"0"}}}} -->
+<main class="wp-block-group" style="margin-top:0">
+  <!-- wp:group {"className":"section section--gray","layout":{"type":"constrained"}} -->
+  <div class="wp-block-group section section--gray">
+    <!-- wp:group {"className":"container","layout":{"type":"constrained"}} -->
+    <div class="wp-block-group container">
+      <!-- wp:heading {"level":1} -->
+      <h1 class="wp-block-heading">ページが見つかりませんでした</h1>
+      <!-- /wp:heading -->
+
+      <!-- wp:paragraph -->
+      <p>アクセスしたURLが変更されたか、削除された可能性があります。<br>お手数ですが、下のリンクから目的のページへお進みください。</p>
+      <!-- /wp:paragraph -->
+
+      <!-- wp:buttons -->
+      <div class="wp-block-buttons"><!-- wp:button -->
+      <div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/">トップへ戻る</a></div>
+      <!-- /wp:button -->
+
+      <!-- wp:button {"className":"is-style-outline"} -->
+      <div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/property_list/">物件一覧を見る</a></div>
+      <!-- /wp:button --></div>
+      <!-- /wp:buttons -->
+    </div>
+    <!-- /wp:group -->
+  </div>
+  <!-- /wp:group -->
+</main>
+<!-- /wp:group -->
+
+<!-- フッター（親を流用するなら slug:"footer" でOK） -->
+<!-- wp:template-part {"slug":"footer","area":"footer"} /-->

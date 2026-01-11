@@ -228,7 +228,6 @@ if ( ! function_exists( 'ovl_handle_member_consult_submission' ) ) {
 		);
 
 		if ( is_wp_error( $post_id ) ) {
-			error_log( '[member_consult] insert_error: ' . $post_id->get_error_message() ); // phpcs:ignore
 			$log( 'insert error', [ 'message' => $post_id->get_error_message() ] );
 			$required_redirect( 'insert_error' );
 		}

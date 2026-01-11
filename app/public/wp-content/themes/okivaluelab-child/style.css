@@ -33,14 +33,23 @@ body.page .entry-header .page-title {
   display: none;
 }
 
-footer.site-footer {
+/* Footer background should bleed full width even when the template-part wrapper is constrained. */
+.wp-block-template-part:has(.site-footer) {
   background: #fbfcfd !important;
   border-top: 1px solid rgba(7, 18, 30, 0.05) !important;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-inline: 0 !important;
+  box-sizing: border-box;
+}
+
+footer.site-footer {
+  background: transparent !important;
+  border-top: 0 !important;
+  width: 100%;
   max-width: none;
+  margin: 0;
   box-sizing: border-box;
   padding-top: var(--wp--preset--spacing--50) !important;
   padding-bottom: 5px !important;
@@ -227,7 +236,7 @@ footer.site-footer {
 }
 
 .site-footer .ovl-footer-legal a {
-  color: inherit;
+  color: #333333;
   text-decoration: none;
 }
 
@@ -293,6 +302,7 @@ body,
   background: var(--ovl-body-bg);
   line-height: 1.8;
   letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
   min-height: 100vh;
 }
 
@@ -324,6 +334,14 @@ body,
   margin-inline: auto;
   width: min(1100px, 95vw);
   padding-inline: clamp(1.5rem, 4vw, 3.5rem);
+  box-sizing: border-box;
+}
+
+.wp-site-blocks>.wp-block-template-part:has(.site-footer) {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: 0;
 }
 
 .wp-block-group.is-layout-constrained>* {
@@ -337,17 +355,32 @@ body,
 }
 
 /* /members/, /member-register/: テンプレート側で main が無い場合もあるので、ルート直下のコンテンツ枠に余白を付ける */
-.page-members .wp-site-blocks>.wp-block-group:not(.site-header),
-.page-id-52 .wp-site-blocks>.wp-block-group:not(.site-header),
-.page-member-register .wp-site-blocks>.wp-block-group:not(.site-header),
-.page-id-46 .wp-site-blocks>.wp-block-group:not(.site-header) {
+.page-members .wp-site-blocks>.wp-block-group:not(.site-header):not(main),
+.page-id-52 .wp-site-blocks>.wp-block-group:not(.site-header):not(main),
+.page-member-register .wp-site-blocks>.wp-block-group:not(.site-header):not(main),
+.page-id-46 .wp-site-blocks>.wp-block-group:not(.site-header):not(main) {
   padding-block-start: clamp(3rem, 5vw, 5rem) !important;
+}
+
+/* /members/: main がある時は上余白を詰める（緑部分のpadding-top対策） */
+.page-members .wp-site-blocks>main,
+.page-id-52 .wp-site-blocks>main,
+.page-template-page-members .wp-site-blocks>main {
+  padding-block-start: clamp(1.25rem, 3vw, 2rem) !important;
+}
+
+/* WordPressの global padding（main.has-global-padding の padding-top）が勝つ場合があるので上書き */
+body.page-members .wp-site-blocks>main.has-global-padding,
+body.page-template-page-members .wp-site-blocks>main.has-global-padding,
+body.page-id-52 .wp-site-blocks>main.has-global-padding {
+  padding-block-start: clamp(1rem, 2.5vw, 1.75rem) !important;
 }
 
 /* Investment page: tighten spacing between header and hero */
 .wp-site-blocks>main.page-investment {
   margin-block-start: 0;
   padding-block-start: 0;
+  padding-block-end: clamp(0.25rem, 1.5vw, 1rem);
 }
 
 .page-investment .ovl-section.ovl-hero {
@@ -425,11 +458,46 @@ body,
   gap: clamp(8px, 2vw, 24px);
   padding-inline: clamp(1rem, 3vw, 2.5rem);
   padding-block: .9rem;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+}
+
+/* Keep sticky header visible under the WP admin bar (logged-in). */
+body.admin-bar .site-header {
+  top: var(--wp-admin--admin-bar--height, 32px);
+}
+
+@media screen and (max-width: 782px) {
+  body.admin-bar .site-header {
+    top: var(--wp-admin--admin-bar--height, 46px);
+  }
+}
+
+.site-header>* {
+  min-width: 0;
 }
 
 @media (min-width: 769px) {
-  .wp-site-blocks>header.site-header {
+  .site-header {
+    flex-wrap: nowrap;
+  }
+
+  /* Keep logo and nav on the same row (avoid full-width flex items). */
+  .site-header> :is(.header-inner, .site-logo.wp-block-site-logo) {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  .site-header>.header-nav-auth {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+  }
+
+  .site-header :is(.wp-block-navigation, .wp-block-navigation__responsive-container) {
+    min-width: 0;
+  }
+
+  .wp-site-blocks header.site-header:not(.alignfull) {
     width: 100%;
     max-width: none;
     margin-inline: 0;
@@ -876,11 +944,40 @@ body.page-id-46 #wpmem_register_form {
 }
 
 /* Match /members/ container style */
-.page-member-register .wp-block-group.has-background,
-.page-id-46 .wp-block-group.has-background {
-  border: 1px solid rgba(15, 23, 42, 0.08) !important;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08) !important;
-  background-color: #fff !important;
+/* Match /members/ container style */
+body.page-member-register .wp-block-group.has-background,
+body.page-members .wp-block-group.has-background,
+body.page-template-page-members .wp-block-group.has-background,
+body.page-id-52 .wp-block-group.has-background,
+body.page-id-46 .wp-block-group.has-background {
+  border: 1px solid #e2e6eb !important;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08) !important;
+  background-color: #ffffff !important;
+  border-radius: 12px !important;
+}
+
+body.page-member-register .wp-block-group.has-background > h1.wp-block-heading,
+body.page-id-46 .wp-block-group.has-background > h1.wp-block-heading {
+  margin-bottom: 0.2rem !important;
+}
+
+body.page-member-register .wp-block-group.has-background > p:first-of-type,
+body.page-id-46 .wp-block-group.has-background > p:first-of-type {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* member-register: widen the content container without affecting other pages */
+body.page-member-register .wp-block-group.has-background,
+body.page-id-46 .wp-block-group.has-background {
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+/* member-register: override constrained layout content width */
+body.page-member-register main.is-layout-constrained,
+body.page-id-46 main.is-layout-constrained {
+  --wp--style--global--content-size: 900px;
 }
 
 /* member-register: allow consent + error rows inside WP-Members button area */
@@ -890,7 +987,7 @@ body.page-id-46 #wpmem_register_form .button_div {
   overflow: visible !important;
   white-space: normal !important;
   display: flex !important;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 0.75rem;
 }
@@ -969,6 +1066,7 @@ a:focus-visible {
   width: min(1100px, 95vw);
   margin-inline: auto;
   padding-inline: clamp(1.5rem, 4vw, 3.5rem);
+  box-sizing: border-box;
 }
 
 .section {
@@ -1005,6 +1103,12 @@ a:focus-visible {
 -------------------------------------------------------------- */
 .page-id-260 .wp-site-blocks> :not(.wp-block-template-part) {
   width: min(1100px, 95vw) !important;
+}
+
+/* フロントページだけ、ヘッダー右端（マイページ/ログアウト）の間隔がズレるのを防ぐ */
+.page-id-260 .site-header .header-auth {
+  gap: clamp(0.9rem, 2vw, 1.5rem) !important;
+  column-gap: clamp(0.9rem, 2vw, 1.5rem) !important;
 }
 
 /* ヘッダー（template-part）と本文の間の自動余白（block gap）をフロントだけ0にする */
@@ -1181,6 +1285,12 @@ a:focus-visible {
 .page-id-260 figure.wp-block-image:has(.wp-image-774) {
   padding-top: 0.2rem;
   padding-left: 3.5rem;
+}
+
+@media (max-width: 768px) {
+  .page-id-260 figure.wp-block-image:has(.wp-image-774) {
+    padding-left: 0;
+  }
 }
 
 .page-id-260 figure.wp-block-image {
@@ -1402,6 +1512,7 @@ a:focus-visible {
 
 /* Wide screens: add a bit more breathing room */
 @media (min-width: 1024px) {
+
   .page-id-260 .hero-with-bg h2,
   .page-id-260 .hero-with-bg p {
     line-height: 1.65;
@@ -1425,7 +1536,7 @@ a:focus-visible {
   gap: clamp(0.45rem, 0.7vw, 0.8rem);
 }
 
-.page-id-260 .wp-block-columns.hero-with-bg p + .wp-block-list {
+.page-id-260 .wp-block-columns.hero-with-bg p+.wp-block-list {
   margin-top: clamp(0.5rem, 0.8vw, 0.9rem);
 }
 
@@ -1917,6 +2028,30 @@ body.single-property .wp-site-blocks main {
 
 body.single-property .wp-site-blocks {
   background-color: #fff;
+}
+
+/* 物件詳細：ヘッダーの左右位置を他ページと揃える（template-part/alignfull由来のズレ対策） */
+body.single-property .wp-site-blocks>.wp-block-template-part:first-child {
+  width: min(1000px, 95vw) !important;
+  max-width: none !important;
+  margin-inline: auto !important;
+  /* 中央揃えを保証 */
+  box-sizing: content-box !important;
+  /* ヘッダーの2行表示を修正 */
+}
+
+body.single-property header.site-header.alignfull {
+  width: 100% !important;
+  margin-inline: 0 !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+}
+
+@media (min-width: 769px) {
+  body.single-property header.site-header {
+    flex-wrap: nowrap !important;
+  }
 }
 
 body.single-property main.property-single {
@@ -2413,7 +2548,7 @@ body.single-property main.property-single {
   background: #0b6f9c;
   color: #fff;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1rem;
   text-decoration: none;
   line-height: 1.2;
   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.05s ease;
@@ -3255,6 +3390,213 @@ body.single-property main.property-single {
   margin: 0;
 }
 
+/* /members/（マイページ）：テンプレート側のbody classに追従して適用 */
+body.page-members .mypage-actions,
+body.page-template-page-members .mypage-actions,
+body.page-id-52 .mypage-actions,
+body.page-members .mypage-favorites,
+body.page-template-page-members .mypage-favorites,
+body.page-id-52 .mypage-favorites,
+body.page-members .mypage-account,
+body.page-template-page-members .mypage-account,
+body.page-id-52 .mypage-account {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: var(--ovl-property-radius, 22px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+/* /members/: 先頭セクションの上余白は0に */
+body.page-members .mypage-actions,
+body.page-template-page-members .mypage-actions,
+body.page-id-52 .mypage-actions {
+  margin-top: 0;
+}
+
+/* /members/: お気に入り一覧（slick）で横にはみ出すのを防止 */
+body.page-members .ovl-favorites-wrap,
+body.page-template-page-members .ovl-favorites-wrap,
+body.page-id-52 .ovl-favorites-wrap {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+
+  body.page-members .ovl-favorites-wrap,
+  body.page-template-page-members .ovl-favorites-wrap,
+  body.page-id-52 .ovl-favorites-wrap {
+    overflow-x: hidden;
+  }
+}
+
+body.page-members .ovl-favorites-wrap .slick-list,
+body.page-template-page-members .ovl-favorites-wrap .slick-list,
+body.page-id-52 .ovl-favorites-wrap .slick-list {
+  overflow: hidden;
+}
+
+body.page-members .ovl-favorites-wrap .slick-track,
+body.page-template-page-members .ovl-favorites-wrap .slick-track,
+body.page-id-52 .ovl-favorites-wrap .slick-track {
+  display: flex;
+}
+
+body.page-members .ovl-favorites-wrap .slick-slide,
+body.page-template-page-members .ovl-favorites-wrap .slick-slide,
+body.page-id-52 .ovl-favorites-wrap .slick-slide,
+body.page-members .ovl-favorites-wrap .slick-slide>*,
+body.page-template-page-members .ovl-favorites-wrap .slick-slide>*,
+body.page-id-52 .ovl-favorites-wrap .slick-slide>* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+body.page-members .ovl-favorites.property-archive,
+body.page-template-page-members .ovl-favorites.property-archive,
+body.page-id-52 .ovl-favorites.property-archive {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+  padding-inline: 0;
+}
+
+body.page-members .ovl-favorites.property-archive .ovl-property-card,
+body.page-template-page-members .ovl-favorites.property-archive .ovl-property-card,
+body.page-id-52 .ovl-favorites.property-archive .ovl-property-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+body.page-members .mypage-actions .card2-list,
+body.page-template-page-members .mypage-actions .card2-list,
+body.page-id-52 .mypage-actions .card2-list,
+body.page-members .mypage-account .card2-list,
+body.page-template-page-members .mypage-account .card2-list,
+body.page-id-52 .mypage-account .card2-list {
+  width: 100%;
+  gap: clamp(0.75rem, 1.5vw, 1.1rem);
+}
+
+body.page-members .mypage-actions .card2,
+body.page-template-page-members .mypage-actions .card2,
+body.page-id-52 .mypage-actions .card2,
+body.page-members .mypage-account .card2,
+body.page-template-page-members .mypage-account .card2,
+body.page-id-52 .mypage-account .card2 {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-radius: 999px !important;
+  border: 1px solid rgba(11, 111, 156, 0.3);
+  background: #fff;
+  padding: clamp(0.85rem, 2.4vw, 1.1rem) clamp(1rem, 3vw, 1.3rem);
+  color: #0b6f9c;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+body.page-members .mypage-actions .card2:hover,
+body.page-template-page-members .mypage-actions .card2:hover,
+body.page-id-52 .mypage-actions .card2:hover,
+body.page-members .mypage-account .card2:hover,
+body.page-template-page-members .mypage-account .card2:hover,
+body.page-id-52 .mypage-account .card2:hover {
+  background: rgba(11, 111, 156, 0.06);
+  border-color: rgba(11, 111, 156, 0.45);
+}
+
+body.page-members .mypage-actions .card2-title,
+body.page-template-page-members .mypage-actions .card2-title,
+body.page-id-52 .mypage-actions .card2-title,
+body.page-members .mypage-account .card2-title,
+body.page-template-page-members .mypage-account .card2-title,
+body.page-id-52 .mypage-account .card2-title {
+  color: #0b6f9c;
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 0.35rem;
+}
+
+body.page-members .mypage-actions .card2-text,
+body.page-template-page-members .mypage-actions .card2-text,
+body.page-id-52 .mypage-actions .card2-text,
+body.page-members .mypage-account .card2-text,
+body.page-template-page-members .mypage-account .card2-text,
+body.page-id-52 .mypage-account .card2-text {
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0;
+  opacity: 0.85;
+}
+
+@media (max-width: 480px) {
+
+  body.page-members .wp-site-blocks>main.has-global-padding,
+  body.page-template-page-members .wp-site-blocks>main.has-global-padding,
+  body.page-id-52 .wp-site-blocks>main.has-global-padding {
+    padding-block-start: 1rem !important;
+  }
+
+  body.page-members .wp-site-blocks>main,
+  body.page-template-page-members .wp-site-blocks>main,
+  body.page-id-52 .wp-site-blocks>main,
+  body.page-members .wp-site-blocks>.wp-block-group:not(.wp-block-template-part),
+  body.page-template-page-members .wp-site-blocks>.wp-block-group:not(.wp-block-template-part),
+  body.page-id-52 .wp-site-blocks>.wp-block-group:not(.wp-block-template-part) {
+    width: 100% !important;
+    max-width: none !important;
+    margin-inline: 0 !important;
+    padding-inline: 0 !important;
+  }
+
+  /* main配下の「constrained」ルールで内側が細くなるのを防ぐ */
+  body.page-members .wp-site-blocks>main.is-layout-constrained>*,
+  body.page-template-page-members .wp-site-blocks>main.is-layout-constrained>*,
+  body.page-id-52 .wp-site-blocks>main.is-layout-constrained>* {
+    max-width: none !important;
+    margin-inline: 0 !important;
+  }
+
+  /* has-global-padding が二重に効いて“細い列”になるのを防ぐ */
+  body.page-members .wp-site-blocks>main.has-global-padding,
+  body.page-template-page-members .wp-site-blocks>main.has-global-padding,
+  body.page-id-52 .wp-site-blocks>main.has-global-padding {
+    padding-inline: 0 !important;
+  }
+
+  body.page-members .wp-site-blocks>main.has-global-padding>.wp-block-group.has-global-padding,
+  body.page-template-page-members .wp-site-blocks>main.has-global-padding>.wp-block-group.has-global-padding,
+  body.page-id-52 .wp-site-blocks>main.has-global-padding>.wp-block-group.has-global-padding {
+    width: 100% !important;
+    max-width: none !important;
+    margin-inline: 0 !important;
+    padding-inline: 0 !important;
+  }
+
+  body.page-members .mypage-actions,
+  body.page-template-page-members .mypage-actions,
+  body.page-id-52 .mypage-actions,
+  body.page-members .mypage-favorites,
+  body.page-template-page-members .mypage-favorites,
+  body.page-id-52 .mypage-favorites,
+  body.page-members .mypage-account,
+  body.page-template-page-members .mypage-account,
+  body.page-id-52 .mypage-account {
+    padding: 1rem;
+    margin-inline: 0;
+  }
+}
+
 .ovl-property-theme .ovl-member-fields {
   list-style: none;
   padding-left: 0;
@@ -3312,7 +3654,7 @@ body.single-property main.property-single {
 
 .property-archive__filter {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   padding: clamp(1.25rem, 3vw, 1.75rem);
   border-radius: calc(var(--property-card-radius) - 6px);
@@ -3331,6 +3673,9 @@ body.single-property main.property-single {
 
 .property-archive__filter input[type="number"],
 .property-archive__filter select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   border-radius: 999px;
   border: 1px solid rgba(15, 23, 42, 0.15);
   padding: 0.55rem 0.9rem;
@@ -3399,6 +3744,25 @@ body.single-property main.property-single {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--property-card-gap);
+  width: 100%;
+  max-width: 100%;
+  justify-items: stretch;
+}
+
+/* 物件一覧：狭幅でカードがはみ出して欠けるのを防止 */
+.property-archive__grid>* {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.property-archive .ovl-property-card,
+.property-archive .slick-slide,
+.property-archive .un-card__item,
+.property-archive .top_page_property_ad_top {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* 譛譁ｰ縺ｮ髱橸ｿｽE髢狗黄莉ｶ繝斐ャ繧ｯ繧｢繝・?ｽE?ｽE?ｽPC縺ｧ4蛻励↓ */
@@ -3654,6 +4018,37 @@ body.single-property main.property-single {
   min-height: clamp(110px, 16vw, 165px);
 }
 
+.ovl-property-card__auth-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0.5rem 0.6rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+.ovl-property-card__auth-links a {
+  color: #0b6f9c;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.ovl-property-card__auth-sep {
+  display: inline-flex;
+  align-items: center;
+  color: #94a3b8;
+  font-weight: 600;
+  line-height: 1.2;
+  user-select: none;
+}
+
+.ovl-property-card__auth-links a:hover {
+  text-decoration: underline;
+}
+
 .ovl-property-card__head {
   display: flex;
   flex-direction: column;
@@ -3785,6 +4180,9 @@ body.single-property main.property-single {
   font-size: 0.9rem;
   font-weight: 600;
   color: #091626;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .ovl-property-card__spec--price .ovl-property-card__spec-label {
@@ -3808,6 +4206,64 @@ body.single-property main.property-single {
 .ovl-property-card__footer--media {
   justify-content: center;
   font-size: 0.8rem;
+  flex-wrap: nowrap;
+  gap: clamp(0.35rem, 1.2vw, 0.6rem);
+  padding-inline: clamp(0.5rem, 1.4vw, 0.9rem);
+  padding-bottom: clamp(0.35rem, 1vw, 0.6rem);
+  box-sizing: border-box;
+}
+
+.ovl-property-card__footer--media .ovl-property-card__cta,
+.ovl-property-card__footer--media .ovl-favorite-button {
+  flex: 0 1 auto;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: clamp(0.78rem, 2.2vw, 0.9rem);
+  padding-block: clamp(0.42rem, 1.2vw, 0.55rem);
+  padding-inline: clamp(0.7rem, 2.2vw, 1.3rem);
+}
+
+.ovl-property-card__footer--media .ovl-favorite-button__label {
+  white-space: nowrap;
+}
+
+.ovl-property-card__actions {
+  --ovl-action-btn-height: clamp(40px, 6vw, 44px);
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: clamp(0.35rem, 1.2vw, 0.6rem);
+  margin-top: 0.55rem;
+  width: 100%;
+  max-width: min(720px, 100%);
+  margin-inline: auto;
+  padding-inline: 0;
+  padding-bottom: 0;
+  box-sizing: border-box;
+}
+
+.ovl-property-card__actions .ovl-property-card__cta,
+.ovl-property-card__actions .ovl-favorite-button {
+  flex: 1 1 0;
+  min-width: 0;
+  height: var(--ovl-action-btn-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: clamp(0.78rem, 1.8vw, 0.92rem);
+  line-height: 1;
+  padding-block: 0;
+  padding-inline: clamp(0.75rem, 2vw, 1.15rem);
+  box-sizing: border-box;
+}
+
+.ovl-property-card__actions .ovl-property-card__cta br {
+  display: none;
+}
+
+.ovl-property-card__actions .ovl-favorite-button__label {
+  white-space: nowrap;
 }
 
 .ovl-property-card__cta {
@@ -3830,12 +4286,38 @@ body.single-property main.property-single {
   }
 
   .ovl-property-card__thumb {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 3;
     height: auto;
+  }
+
+  .ovl-favorites-wrap .ovl-property-card {
+    grid-template-columns: 1fr !important;
+    gap: 0;
+  }
+
+  .ovl-favorites-wrap .ovl-property-card__thumb {
+    aspect-ratio: 4 / 3;
+    height: auto;
+  }
+
+  .ovl-favorites.property-archive .ovl-property-card__thumb {
+    aspect-ratio: 4 / 3;
+    height: auto !important;
   }
 
   .ovl-property-card__footer--media {
     margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .ovl-property-card__actions {
+    flex-wrap: wrap;
+  }
+
+  .ovl-property-card__actions .ovl-property-card__cta,
+  .ovl-property-card__actions .ovl-favorite-button {
+    flex: 1 1 100%;
   }
 }
 
@@ -3882,6 +4364,10 @@ body.single-property main.property-single {
   .property-archive__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .page-id-87 .property-archive__grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -3904,6 +4390,12 @@ body.single-property main.property-single {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
   margin-top: 2rem;
+}
+
+@media (max-width: 640px) {
+  .front-property__cards {
+    grid-template-columns: 1fr;
+  }
 }
 
 .front-property__cards>* {
@@ -4125,9 +4617,23 @@ body.single-property main.property-single {
 }
 
 .ovl-wpmem-consent__label {
-  display: flex;
-  align-items: flex-start;
+  display: flex !important;
+  align-items: flex-start !important;
+  /* Align to top to target the first line */
+  flex-wrap: nowrap !important;
+  /* Force side-by-side */
   gap: 0.5rem;
+  line-height: normal;
+}
+
+.ovl-wpmem-consent__label span {
+  display: inline-block;
+  line-height: 1.5;
+}
+
+.ovl-wpmem-consent__label input[type="checkbox"] {
+  /* Push down to align with the center of the first line of text (line-height 1.5) */
+  margin-top: 0.3em !important;
 }
 
 .ovl-wpmem-consent__label .ovl-privacy-modal-trigger {
@@ -4152,10 +4658,17 @@ body.single-property main.property-single {
 .ovl-register-error {
   flex: 1 1 100%;
   margin-top: 0.35rem;
-  color: #f3aaaa;
+  color: #b42318 !important;
   font-weight: 600;
+  font-size: 0.95rem;
   line-height: 1.6;
-  text-align: right;
+  text-align: left;
+  background: #fff1f1;
+  border: 1px solid #f3c2c2;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ovl-register-error[hidden] {
@@ -4544,13 +5057,21 @@ body.page-id-46 #wpmem_register_form .button_div {
 body.page-member-register #wpmem_register_form .button_div .buttons,
 body.page-member-register #wpmem_register_form input[type="submit"].buttons,
 body.page-id-46 #wpmem_register_form .button_div .buttons,
-body.page-id-46 #wpmem_register_form input[type="submit"].buttons {
+body.page-id-46 #wpmem_register_form input[type="submit"].buttons,
+body.page-members #wpmem_login input[type="submit"],
+body.page-template-page-members #wpmem_login input[type="submit"],
+body.page-id-52 #wpmem_login input[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   border-radius: 999px;
   padding: 0.65rem 1.4rem;
   border: none;
   background: #0b6f9c;
   color: #fff;
   font-weight: 600;
+  line-height: 1.4;
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
@@ -4559,8 +5080,202 @@ body.page-id-46 #wpmem_register_form input[type="submit"].buttons {
 body.page-member-register #wpmem_register_form .button_div .buttons:hover,
 body.page-member-register #wpmem_register_form input[type="submit"].buttons:hover,
 body.page-id-46 #wpmem_register_form .button_div .buttons:hover,
-body.page-id-46 #wpmem_register_form input[type="submit"].buttons:hover {
+body.page-id-46 #wpmem_register_form input[type="submit"].buttons:hover,
+body.page-members #wpmem_login input[type="submit"]:hover,
+body.page-template-page-members #wpmem_login input[type="submit"]:hover,
+body.page-id-52 #wpmem_login input[type="submit"]:hover {
   background: #0a5a7d;
+}
+
+/* member-register: ensure submit text is visible */
+body.page-member-register #wpmem_register_form input#ovl-register-btn.buttons,
+body.page-id-46 #wpmem_register_form input#ovl-register-btn.buttons {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  background: #0b6f9c !important;
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  text-indent: 0 !important;
+  opacity: 1 !important;
+}
+
+/* PREVIOUS BUTTON STYLES REMOVED TO AVOID CONFLICT */
+
+/* Center the registration form container but keep content left aligned */
+body.page-member-register #wpmem_register_form,
+body.page-member-register #wpmem_register_form fieldset,
+body.page-id-46 #wpmem_register_form,
+body.page-id-46 #wpmem_register_form fieldset {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  /* Centers the direct children (labels, divs) horizontally */
+  margin-inline: auto !important;
+  width: 100%;
+}
+
+/* Ensure labels and inputs have a consistent max-width and align to the left within that width */
+body.page-member-register #wpmem_register_form label,
+body.page-member-register #wpmem_register_form .div_text,
+body.page-member-register #wpmem_register_form .div_select,
+body.page-member-register #wpmem_register_form .req-text,
+body.page-member-register #wpmem_register_form .ovl-wpmem-required-note,
+body.page-member-register #wpmem_register_form p,
+body.page-id-46 #wpmem_register_form label,
+body.page-id-46 #wpmem_register_form .div_text,
+body.page-id-46 #wpmem_register_form .div_select,
+body.page-id-46 #wpmem_register_form .req-text,
+body.page-id-46 #wpmem_register_form .ovl-wpmem-required-note,
+body.page-id-46 #wpmem_register_form p {
+  width: 100%;
+  max-width: 450px;
+  /* Match the layout width */
+  text-align: left !important;
+  /* Force text to start at the left edge of the block */
+  align-self: center !important;
+  /* Center the block in the parent */
+  margin-inline: auto !important;
+  display: block;
+  /* Ensure they take up the width */
+}
+
+/* Ensure input fields fill the max-width */
+body.page-member-register #wpmem_register_form input[type="text"],
+body.page-member-register #wpmem_register_form input[type="password"],
+body.page-member-register #wpmem_register_form input[type="email"],
+body.page-member-register #wpmem_register_form input[type="tel"],
+body.page-member-register #wpmem_register_form select,
+body.page-id-46 #wpmem_register_form input[type="text"],
+body.page-id-46 #wpmem_register_form input[type="password"],
+body.page-id-46 #wpmem_register_form input[type="email"],
+body.page-id-46 #wpmem_register_form input[type="tel"],
+body.page-id-46 #wpmem_register_form select {
+  width: 100% !important;
+  max-width: 450px !important;
+  box-sizing: border-box;
+}
+
+/* Member Register & Login Page Button Area Layout */
+body.page-member-register #wpmem_register_form .button_div,
+body.page-id-46 #wpmem_register_form .button_div,
+body.page-members #wpmem_login .button_div,
+body.page-template-page-members #wpmem_login .button_div,
+body.page-id-52 #wpmem_login .button_div {
+  display: flex !important;
+  flex-flow: row wrap;
+  /* Changed to row wrap to allow side-by-side elements */
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 420px;
+  margin-inline: auto;
+  /* Hide raw text nodes and breaks */
+  font-size: 0 !important;
+  line-height: 0;
+}
+
+body.page-members #wpmem_login .button_div br,
+body.page-template-page-members #wpmem_login .button_div br,
+body.page-id-52 #wpmem_login .button_div br {
+  display: none !important;
+}
+
+/* Restore font-size for interactive elements */
+body.page-members #wpmem_login .button_div input,
+body.page-members #wpmem_login .button_div label,
+body.page-members #wpmem_login .button_div a,
+body.page-template-page-members #wpmem_login .button_div input,
+body.page-template-page-members #wpmem_login .button_div label,
+body.page-template-page-members #wpmem_login .button_div a,
+body.page-id-52 #wpmem_login .button_div input,
+body.page-id-52 #wpmem_login .button_div label,
+body.page-id-52 #wpmem_login .button_div a {
+  font-size: 0.95rem !important;
+  line-height: 1.5;
+}
+
+/* Login Button: Full Width, Top */
+body.page-members #wpmem_login input[type="submit"],
+body.page-template-page-members #wpmem_login input[type="submit"],
+body.page-id-52 #wpmem_login input[type="submit"] {
+  width: 100%;
+  margin: 0 !important;
+  order: 1;
+}
+
+/* Checkbox (if separate): Middle */
+body.page-members #wpmem_login input[type="checkbox"],
+body.page-template-page-members #wpmem_login input[type="checkbox"],
+body.page-id-52 #wpmem_login input[type="checkbox"] {
+  order: 2;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 0.5rem 0 0 !important;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Remember Me Label: Middle */
+body.page-members #wpmem_login label,
+body.page-template-page-members #wpmem_login label,
+body.page-id-52 #wpmem_login label {
+  order: 2;
+  margin: 0 !important;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: auto !important;
+  /* Allow sitting next to checkbox */
+  justify-content: center;
+}
+
+/* If checkbox is INSIDE label, ensure it behaves well */
+body.page-members #wpmem_login label input[type="checkbox"],
+body.page-template-page-members #wpmem_login label input[type="checkbox"],
+body.page-id-52 #wpmem_login label input[type="checkbox"] {
+  margin-right: 0.5rem !important;
+}
+
+/* Action Links: Center align text */
+body.page-members #wpmem_login a:not(#login),
+body.page-template-page-members #wpmem_login a:not(#login),
+body.page-id-52 #wpmem_login a:not(#login) {
+  order: 3;
+  width: auto !important;
+  /* Force auto width */
+  flex: 0 1 auto !important;
+  /* Prevent growing to fill row */
+  min-width: 140px;
+  /* Ensure a reasonable touch target */
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding: 0.8rem 1.2rem;
+  display: inline-flex !important;
+  /* Changed to inline-flex to sit side-by-side */
+  align-items: center;
+  justify-content: center;
+  /* Center the text */
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #0f6ba9;
+  font-weight: 700;
+  border-radius: 10px;
+  text-decoration: none !important;
+}
+
+/* Pseudo-elements removed for simpler display */
+
+/* Hover effects */
+body.page-members #wpmem_login a:not(#login):hover,
+body.page-template-page-members #wpmem_login a:not(#login):hover,
+body.page-id-52 #wpmem_login a:not(#login):hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
 body.page-member-register #wpmem_register_form .req-text,
@@ -4573,8 +5288,98 @@ body.page-id-46 #wpmem_register_form .req-text {
   align-self: center;
 }
 
+/* Intro Heading & Paragraph Alignment */
+body.page-member-register .wp-block-group.has-background>h1,
+body.page-member-register .wp-block-group.has-background>p,
+body.page-id-46 .wp-block-group.has-background>h1,
+body.page-id-46 .wp-block-group.has-background>p {
+  width: 100%;
+  max-width: 600px;
+  margin-inline: auto;
+  text-align: left;
+}
+
+/* ---------------------------------------------------------
+   Register Page Specific: Right-Aligned Button
+   --------------------------------------------------------- */
+body.page-member-register #wpmem_register_form .button_div,
+body.page-id-46 #wpmem_register_form .button_div {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  /* Allow children to size themselves */
+  max-width: 450px !important;
+  /* Match input field width */
+  width: 100%;
+  margin-inline: auto;
+}
+
+/* Consent Block (Full Width, Left Aligned) */
+body.page-member-register .ovl-wpmem-consent,
+body.page-id-46 .ovl-wpmem-consent {
+  width: 100%;
+  text-align: left;
+}
+
+/* Submit Button (Right Aligned) */
+body.page-member-register #wpmem_register_form input[type="submit"].buttons,
+body.page-id-46 #wpmem_register_form input[type="submit"].buttons {
+  align-self: flex-end;
+  /* Align to the right edge */
+  width: auto !important;
+  min-width: 160px;
+  margin-right: 0 !important;
+}
+
+/* Error Message (Centered or Left as needed) */
+body.page-member-register .ovl-register-error,
+body.page-id-46 .ovl-register-error {
+  text-align: left;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
+body.page-member-register .wpmem_msg,
+body.page-member-register .wpmem_msg p,
+body.page-members .wpmem_msg,
+body.page-members .wpmem_msg p,
+body.page-template-page-members .wpmem_msg,
+body.page-template-page-members .wpmem_msg p,
+body.page-id-52 .wpmem_msg,
+body.page-id-52 .wpmem_msg p,
+body.page-id-46 .wpmem_msg,
+body.page-id-46 .wpmem_msg p {
+  text-align: left !important;
+}
+
+body.page-member-register .wpmem_msg,
+body.page-id-46 .wpmem_msg,
+body.page-members .wpmem_msg,
+body.page-template-page-members .wpmem_msg,
+body.page-id-52 .wpmem_msg {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  max-height: none !important;
+  font-size: 0.9rem;
+  background: #fff1f1;
+  border: 1px solid #f3c2c2;
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+}
+
+/* Reduce spacing below form labels */
+body.page-members #wpmem_login p,
+body.page-template-page-members #wpmem_login p,
+body.page-id-52 #wpmem_login p,
+body.page-member-register #wpmem_register_form p,
+body.page-id-46 #wpmem_register_form p {
+  margin-bottom: 5px !important;
+}
+
 body.page-id-46 main.wp-block-group {
-  margin-top: 0 !important;
+  margin-top: 30px !important;
 }
 
 body.page-id-46 .wp-site-blocks>main>.wp-block-post-title {
@@ -4946,6 +5751,11 @@ body.page-id-46 .wp-block-group.alignfull.has-global-padding {
 @media (max-width: 768px) {
   .page-investment .inv-footer-nav .inv-container:has(> .inv-nav-card:nth-child(2)) {
     grid-template-columns: 1fr;
+    gap: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .page-investment .inv-footer-nav .inv-container:has(> .inv-nav-card:nth-child(2)) .inv-nav-card {
+    height: auto;
   }
 }
 
@@ -5090,6 +5900,10 @@ body.page-id-46 .wp-block-group.alignfull.has-global-padding {
   font-size: 1.05rem !important;
   line-height: 1.8 !important;
   color: var(--inv-color-text, #374151);
+}
+
+.page-investment .inv-merits-list .ovl-card-merit p.ovl-card-label {
+  margin-bottom: 0 !important;
 }
 
 .page-investment .inv-merits-list .ovl-card-merit p:last-child {
@@ -5347,6 +6161,34 @@ body.page-id-46 .wp-block-group.alignfull.has-global-padding {
   line-height: 1;
 }
 
+@media (max-width: 600px) {
+  .page-investment .ovl-card--reason,
+  .page-investment .ovl-card-merit {
+    padding: 0 0 2rem 2.5rem !important;
+  }
+
+  .page-investment .ovl-card--reason::before,
+  .page-investment .ovl-card-merit::before {
+    font-size: 2.4rem;
+    top: -0.25rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .page-investment .ovl-grid--2 .ovl-card--reason,
+  .page-investment .inv-merits-list .ovl-card-merit {
+    padding: 2.25rem 0 2rem 0 !important;
+  }
+
+  .page-investment .ovl-grid--2 .ovl-card--reason::before,
+  .page-investment .inv-merits-list .ovl-card-merit::before {
+    position: static !important;
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 2rem;
+  }
+}
+
 /* Typography Consistency */
 .page-investment h3 {
   font-size: 1.5rem !important;
@@ -5436,6 +6278,56 @@ body.page-id-46 .wp-block-group.alignfull.has-global-padding {
   color: var(--inv-color-primary, #0b4b6b);
   opacity: 0.25;
   line-height: 1;
+}
+
+@media (max-width: 700px) {
+  .page-investment .ovl-card-grid .ovl-card,
+  .page-investment .ovl-grid--2 .ovl-card--reason,
+  .page-investment .ovl-grid--2 .ovl-card-merit,
+  .page-investment .inv-merits-list .ovl-card-merit,
+  .page-investment .ovl-card-merit {
+    padding: 2.25rem 0 2rem 0 !important;
+  }
+
+  .page-investment .ovl-card-grid .ovl-card::before,
+  .page-investment .ovl-grid--2 .ovl-card--reason::before,
+  .page-investment .ovl-grid--2 .ovl-card-merit::before,
+  .page-investment .inv-merits-list .ovl-card-merit::before,
+  .page-investment .ovl-card-merit::before {
+    position: static !important;
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .page-okinawa-investment .ovl-anxiety-cards {
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  .page-okinawa-investment .ovl-card--alert {
+    width: 100% !important;
+    max-width: none !important;
+    margin-inline: 0 !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .page-okinawa-investment.page-investment .ovl-section.ovl-anxieties {
+    width: 100% !important;
+    max-width: none !important;
+    padding-inline: clamp(0.75rem, 3vw, 1.5rem) !important;
+    box-sizing: border-box;
+  }
+}
+
+/* Chunanbu investment: override global section width rule. */
+body.page-chunanbu-investment.page-investment section.ovl-section.ovl-section--tint:not(.ovl-hero) {
+  width: min(946px, 92vw) !important;
+  max-width: 946px !important;
+  margin-inline: auto !important;
 }
 
 .page-investment .ovl-card-grid .ovl-card:last-child {
@@ -5568,7 +6460,7 @@ body.page-id-46 .wp-block-group.alignfull.has-global-padding {
 @media (max-width: 600px) {
   .page-investment .inv-accordion-list details.ovl-accordion-item {
     padding-left: 0 !important;
-    padding-top: 3.5rem !important;
+    padding-top: 1.5rem !important;
   }
 
   .page-investment .inv-accordion-list details.ovl-accordion-item::before {
@@ -5694,17 +6586,17 @@ body.page-id-46 .wp-block-group.alignfull.has-global-padding {
 }
 
 /* Accordion paragraphs: remove margins (orange) and keep spacing via padding. */
-.page-investment details.ovl-accordion > p,
-.page-investment details.ovl-accordion__item > p,
-.page-investment .inv-accordion-list details > p {
+.page-investment details.ovl-accordion>p,
+.page-investment details.ovl-accordion__item>p,
+.page-investment .inv-accordion-list details>p {
   margin: 0 !important;
   padding-top: 0.25rem !important;
   padding-bottom: 0.4rem !important;
 }
 
-.page-investment details.ovl-accordion > p:last-child,
-.page-investment details.ovl-accordion__item > p:last-child,
-.page-investment .inv-accordion-list details > p:last-child {
+.page-investment details.ovl-accordion>p:last-child,
+.page-investment details.ovl-accordion__item>p:last-child,
+.page-investment .inv-accordion-list details>p:last-child {
   padding-bottom: 0 !important;
 }
 
@@ -5794,8 +6686,8 @@ body.page-id-46 .wp-block-group.alignfull.has-global-padding {
 
 /* Specific overrides for sections to ensure background stays full width 
    but content is centered and limited */
-.page-investment .inv-section:not(.ovl-hero),
-.page-investment .ovl-section:not(.ovl-hero) {
+body:not(.page-chunanbu-investment):not(.page-id-315) .page-investment .inv-section:not(.ovl-hero),
+body:not(.page-chunanbu-investment):not(.page-id-315) .page-investment .ovl-section:not(.ovl-hero) {
   width: 100% !important;
   max-width: none !important;
 }
@@ -5856,6 +6748,70 @@ body.page-id-46 .wp-block-group.alignfull.has-global-padding {
   width: 100%;
   height: auto;
   border-radius: 12px;
+}
+
+/* Okinawa investment: align the overview image with left-aligned sections. */
+.page-okinawa-investment .ovl-figure--assurance {
+  width: min(1100px, 95vw);
+  max-width: 1100px;
+  margin: 0 0 5rem;
+}
+
+.page-okinawa-investment.page-investment .ovl-section.ovl-anxieties {
+  width: min(1100px, 95vw) !important;
+  max-width: 1100px !important;
+  margin-inline: auto !important;
+  padding-inline: 0 !important;
+  box-sizing: border-box;
+}
+
+.page-okinawa-investment.page-investment .ovl-section.ovl-anxieties > .ovl-container {
+  padding-inline: clamp(1.5rem, 4vw, 3.5rem) !important;
+  box-sizing: border-box;
+}
+
+.page-okinawa-investment.page-investment .ovl-section.ovl-anxieties:not(.ovl-hero) {
+  width: min(1100px, 95vw) !important;
+  max-width: 1100px !important;
+  margin-inline: auto !important;
+}
+
+.page-id-321 .ovl-section.ovl-anxieties {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: auto !important;
+  padding-inline: clamp(0.75rem, 3vw, 1.5rem) !important;
+  box-sizing: border-box;
+}
+
+.page-chunanbu-investment .ovl-section.ovl-anxieties {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: auto !important;
+  padding-inline: clamp(0.75rem, 3vw, 1.5rem) !important;
+  box-sizing: border-box;
+}
+
+.page-chunanbu-investment .ovl-section.ovl-section--tint {
+  width: min(946px, 92vw) !important;
+  max-width: 946px !important;
+  margin-inline: auto !important;
+  padding-inline: clamp(0.75rem, 3vw, 1.5rem) !important;
+  box-sizing: border-box;
+}
+
+.page-chunanbu-investment.page-investment .ovl-section.ovl-section--tint:not(.ovl-hero) {
+  width: min(946px, 92vw) !important;
+  max-width: 946px !important;
+  margin-inline: auto !important;
+}
+
+.page-chunanbu-investment .ovl-section.ovl-section--tint > .ovl-container {
+  width: min(946px, 95vw);
+  max-width: 946px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 4vw, 3.5rem) !important;
+  box-sizing: border-box;
 }
 
 /* Cards Layout: Changed to 1-column stack for better readability of long text */
@@ -6384,7 +7340,11 @@ body.single-property main.property-single .property-table-wrapper {
 
 body.single-property main.property-single .property-table {
   width: 100%;
+  display: table !important;
   border-collapse: collapse;
+  table-layout: fixed;
+  overflow-x: visible !important;
+  border: 1px solid #e4e7ef;
 }
 
 body.single-property main.property-single .property-table__section th {
@@ -7066,7 +8026,7 @@ body.single-property main.property-single .btn-link {
 /* モバイル調整 */
 @media (max-width: 768px) {
   .profile-page .ovl-hero {
-    text-align: center;
+    text-align: left;
   }
 
   .profile-page .hero-grid {
@@ -7117,5 +8077,263 @@ body.single-property main.property-single .btn-link {
   .profile-page .section-cta-final .wp-block-button,
   .profile-page .section-cta-final .wp-block-button__link {
     width: 100%;
+  }
+}
+
+/* ==============================================================
+   Mobile overflow hardening (追加上書き)
+   - 100vw / -50vw / 右はみ出し等の横スクロール抑止
+   - 画像/iframe/表/pre/code のはみ出し抑止
+   方針: body直の overflow-x は使わず、対象セクション単位で clip
+   ============================================================== */
+
+/* body/html への全体クリップは行わない（既存ルールの上書き） */
+html,
+body,
+.wp-site-blocks {
+  overflow-x: visible;
+}
+
+@supports not (overflow: clip) {
+
+  html,
+  body,
+  .wp-site-blocks {
+    overflow-x: visible;
+  }
+}
+
+/* 投稿本文/固定ページ本文の “長いURL/コード” によるはみ出し対策（ヘッダー等は触らない） */
+:where(.wp-site-blocks) :where(.wp-block-post-content, .entry-content, .wp-block-post-excerpt) {
+  overflow-wrap: anywhere;
+}
+
+:where(.wp-site-blocks) :where(.wp-block-post-content a, .entry-content a, .wp-block-post-excerpt a) {
+  word-break: break-word;
+}
+
+/* 画像/埋め込みの基本はみ出し対策（既存img max-width補強） */
+:where(.wp-site-blocks) :where(img, svg, video, canvas) {
+  max-width: 100%;
+  height: auto;
+}
+
+:where(.wp-site-blocks) :where(iframe, embed, object) {
+  max-width: 100%;
+}
+
+:where(.wp-site-blocks) :where(.wp-block-embed, .wp-block-embed__wrapper) {
+  max-width: 100%;
+}
+
+:where(.wp-site-blocks) :where(.wp-block-embed iframe, .wp-block-embed__wrapper iframe) {
+  max-width: 100%;
+}
+
+/* テーブルは本文内で横スクロール “内側” に閉じ込める */
+:where(.wp-site-blocks) :where(.wp-block-table) {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+:where(.wp-site-blocks) :where(.wp-block-table table) {
+  width: max-content;
+  min-width: 100%;
+}
+
+/* pre/code は横スクロールを内側に閉じ込める（ページ全体はスクロールさせない） */
+:where(.wp-site-blocks) :where(pre) {
+  max-width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+:where(.wp-site-blocks) :where(code) {
+  overflow-wrap: anywhere;
+}
+
+/* 固定幅指定が混ざったケースも “要素内スクロール” に閉じ込める */
+:where(.wp-site-blocks) :where(.wp-block-post-content, .entry-content) :where(table, iframe, pre) {
+  max-width: 100%;
+}
+
+/* フロント（page-id-260）のカード枠：width+padding合算での溢れ防止 */
+.page-id-260 .wp-block-post-content>* {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* ========= full-bleed（全幅）要素の横スクロール対策 =========
+   可能な限り width:100vw → width:100% へ寄せ、必要分は margin で全幅化。
+   どうしてもはみ出す分は「そのセクション」で overflow-x: clip する。
+*/
+
+/* ==========================================================================
+   スマートフォン幅 (360px〜) 最適化（最終統合版）
+   レイアウト崩れ・横スクロール・はみ出し・文字潰れを根本解消
+   ========================================================================== */
+
+/* 1) & 2) 全体のはみ出し・横スクロール防止の強化 */
+html,
+body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* 長いテキスト・テーブル・ソースコードのはみ出し防止 */
+table,
+pre,
+code {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  display: block;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 1) 5) コンテナ幅の計算ミス修正と全幅要素の安定化 */
+.wp-site-blocks>* {
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin-inline: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* 全幅背景を必要とする要素の修正 (-50vwを直接使わず親のoverflowに任せる) */
+.site-footer,
+.page-id-260 .wp-block-columns.hero-with-bg,
+.ovl-section.ovl-hero {
+  left: 0 !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Investment hero: keep full-bleed section centered in viewport */
+.page-investment .ovl-section.ovl-hero {
+  margin-inline: calc(50% - 50vw) !important;
+}
+
+/* 3) ヘッダーナビ：ロゴとメニューの重なり・突き抜け防止 */
+@media (max-width: 1180px) {
+  .site-header {
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+    /* 隙間をさらに詰めて重なりを回避 */
+    padding-inline: clamp(1rem, 2vw, 1.5rem) !important;
+  }
+
+  .site-logo.wp-block-site-logo {
+    flex-shrink: 0 !important;
+    /* ロゴが潰れないように固定 */
+    max-width: 160px !important;
+    /* 幅を少しセーブ */
+  }
+
+  .header-nav-auth {
+    flex: 1;
+    min-width: 0;
+    /* flexアイテムが縮小できるように設定 */
+    margin: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    scrollbar-width: none;
+    display: flex !important;
+    justify-content: flex-end !important;
+    /* メニューを右寄せに */
+  }
+
+  .header-nav-auth::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-header .wp-block-navigation__container {
+    flex-wrap: nowrap !important;
+    gap: clamp(0.5rem, 1.5vw, 1rem) !important;
+    /* 間隔を動的に縮小 */
+    justify-content: flex-end !important;
+  }
+
+  .site-header .wp-block-navigation-item__content {
+    font-size: 0.825rem !important;
+    /* 文字サイズをわずかに縮小 */
+    white-space: nowrap !important;
+    padding-inline: 0.25rem !important;
+    /* 内側の余白を削って幅を稼ぐ */
+  }
+}
+
+/* 4) 6) スマホ最適化（360px周辺）: 文字サイズ・行間・タップ領域 */
+@media (max-width: 768px) {
+  body {
+    line-height: 1.75;
+  }
+
+  /* 謎余白（ネストされたグループの累積パディング）を解除 */
+  .wp-block-group.has-global-padding,
+  .wp-site-blocks>main {
+    padding-inline: 1.25rem !important;
+  }
+
+  /* 物件一覧：カードの縦並び化 */
+  .property-archive-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .property-card {
+    display: flex;
+    flex-direction: column !important;
+    padding: 1rem !important;
+  }
+
+  /* 物件詳細：ヒーローとサイドバーの縦並び化 */
+  body.single-property main.property-single .property-hero__layout,
+  body.single-property main.property-single .property-entry.has-sidebar {
+    display: flex;
+    flex-direction: column !important;
+    gap: 1.5rem;
+  }
+
+  body.single-property main.property-single .property-hero__media,
+  body.single-property main.property-single .property-hero__info {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* タップ領域の確保 */
+  .wp-block-button__link,
+  .ovl-property-card__cta,
+  .ovl-favorite-button {
+    min-height: 44px;
+    padding-block: 0.65rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+
+  h1,
+  .h1 {
+    font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+  }
+
+  h2,
+  .h2 {
+    font-size: 1.3rem !important;
+    line-height: 1.4 !important;
+  }
+
+  body.single-property main.property-single .property-hero__summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .site-logo.wp-block-site-logo img {
+    height: 32px !important;
   }
 }

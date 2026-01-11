@@ -1,9 +1,9 @@
 (() => {
   const settings = window.ovlPrivacyModalData || {};
   const triggerSelector = ".ovl-privacy-modal-trigger";
-  const consentCheckboxSelector = "#ovl-privacy-consent";
-  const registerButtonSelector = "#ovl-register-btn";
-  const registerErrorSelector = "#ovl-register-error";
+  const consentCheckboxSelector = "#ovl-privacy-consent, input[name='ovl_privacy_consent']";
+  const registerButtonSelector = "#ovl-register-btn, #wpmem_register_form input[type='submit'].buttons, #wpmem_register_form input[type='submit']";
+  const registerErrorSelector = "#ovl-register-error, .ovl-register-error";
 
   const createModal = () => {
     const overlay = document.createElement("div");
@@ -114,12 +114,24 @@
 
     const consentCheckbox = document.querySelector(consentCheckboxSelector);
     const registerButton = document.querySelector(registerButtonSelector);
-    const registerError = document.querySelector(registerErrorSelector);
-    const registerForm = registerButton?.closest("form");
-    if (!consentCheckbox || !registerButton || !registerError || !registerForm) return;
+    let registerError = document.querySelector(registerErrorSelector);
+    const registerForm =
+      registerButton?.closest("form") || document.querySelector("#wpmem_register_form");
+    if (!consentCheckbox || !registerButton || !registerForm) return;
+
+    if (!registerError) {
+      registerError = document.createElement("div");
+      registerError.id = "ovl-register-error";
+      registerError.className = "ovl-register-error";
+      registerError.setAttribute("role", "alert");
+      registerError.hidden = true;
+      registerError.textContent = "プライバシーの同意にチェックをお願いします。";
+      registerButton.insertAdjacentElement("afterend", registerError);
+    }
 
     const showRegisterError = () => {
       registerError.hidden = false;
+      registerError.style.display = "block";
       registerError.scrollIntoView({ block: "nearest" });
     };
 

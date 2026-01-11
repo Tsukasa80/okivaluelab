@@ -6,6 +6,14 @@ add_action('wp_enqueue_scripts', function () {
   wp_enqueue_style($parent, get_template_directory_uri() . '/style.css', [], null);
   wp_enqueue_style('okivaluelab-child-style', get_stylesheet_uri(), [$parent], filemtime(get_stylesheet_directory() . '/style.css'));
 
+  // ヘッダー表示修正用CSS
+  wp_enqueue_style(
+    'vlab-header-fix',
+    get_stylesheet_directory_uri() . '/assets/css/header-fix.css',
+    ['okivaluelab-child-style'],
+    filemtime(get_stylesheet_directory() . '/assets/css/header-fix.css')
+  );
+
   // お気に入り用スクリプトを登録（必要なページで各テンプレートからenqueue）
   $favorites_script = get_stylesheet_directory() . '/assets/js/ovl-favorites.js';
   if (file_exists($favorites_script)) {
@@ -37,6 +45,14 @@ add_action('wp_enqueue_scripts', function () {
   }
 
   if (is_singular('property')) {
+    // single-property.php では header を do_blocks で出しているため、ナビのviewモジュールが wp_head 後に enqueue されがち。
+    // 先に読み込んでおくと、モバイルのハンバーガー（responsive navigation）が動く。
+    if (function_exists('wp_enqueue_script_module')) {
+      wp_enqueue_script_module('@wordpress/block-library/navigation/view');
+    } elseif (function_exists('wp_script_is') && wp_script_is('wp-navigation', 'registered')) {
+      wp_enqueue_script('wp-navigation');
+    }
+
     wp_enqueue_script('ovl-favorites');
   }
 
@@ -190,10 +206,39 @@ add_filter('the_content', function ($content) {
   return $content;
 }, 20);
 
+// /profile/ のインラインSVG内に混入する <br> を除去して崩れを防ぐ
+function ovl_strip_svg_breaks($content)
+{
+  return preg_replace_callback(
+    '/<svg\\b[^>]*>.*?<\\/svg>/is',
+    function ($matches) {
+      return preg_replace('/<\\/?br\\s*\\/?\\s*>/i', '', $matches[0]);
+    },
+    $content
+  );
+}
+
+add_filter('the_content', function ($content) {
+  if (!is_page('profile')) {
+    return $content;
+  }
+
+  return ovl_strip_svg_breaks($content);
+}, 20);
+
+add_filter('render_block', function ($block_content) {
+  if (!is_page('profile')) {
+    return $block_content;
+  }
+
+  return ovl_strip_svg_breaks($block_content);
+}, 20);
+
 /**
  * WP-Members: 会員登録フォームに「プライバシーポリシー同意」チェックを追加し、未同意なら登録を止める
  */
-function ovl_wpmem_register_privacy_consent_html() {
+function ovl_wpmem_register_privacy_consent_html()
+{
   $privacy_url = function_exists('get_privacy_policy_url') ? get_privacy_policy_url() : '';
   if (!$privacy_url) {
     $privacy_url = home_url('/privacy-policy/');

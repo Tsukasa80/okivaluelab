@@ -327,7 +327,9 @@ if ( ! function_exists( 'ovl_property_detail_print_gallery_script' ) ) {
 return static function ( array $context = [] ): string {
 	$post = get_post();
 	if ( ! $post || 'property' !== $post->post_type ) {
-		error_log( '[OVL] property detail renderer aborted. Post type=' . ( $post->post_type ?? 'null' ) );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+			error_log( '[OVL] property detail renderer aborted. Post type=' . ( $post->post_type ?? 'null' ) );
+		}
 		return '';
 	}
 
@@ -391,7 +393,9 @@ return static function ( array $context = [] ): string {
 			if ( function_exists( 'get_field_objects' ) ) {
 				$field_objects = get_field_objects( $post->ID );
 				if ( ! $field_objects ) {
-					error_log( '[OVL] get_field_objects empty for property ID ' . $post->ID );
+					if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+						error_log( '[OVL] get_field_objects empty for property ID ' . $post->ID );
+					}
 				}
 			}
 

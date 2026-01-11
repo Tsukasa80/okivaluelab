@@ -85,7 +85,6 @@ add_shortcode(
 						$query->the_post();
 						$post_id      = get_the_ID();
 						$permalink    = get_permalink( $post_id );
-						$link         = add_query_arg( 'redirect_to', rawurlencode( $permalink ), home_url( '/members/' ) );
 						$is_new       = ( time() - get_post_time( 'U', true ) ) < 14 * DAY_IN_SECONDS;
 						$price        = $format_number( $get_field( 'price', $post_id ) );
 						$yield_raw    = $get_field( 'yield_gross', $post_id );
@@ -165,32 +164,29 @@ add_shortcode(
 						?>
 						<article <?php post_class( 'ovl-property-card un-card__item top_page_property_ad_top slick-slide' ); ?>>
 							<div class="ovl-property-card__media">
-								<a class="ovl-property-card__thumb" href="<?php echo esc_url( $permalink ); ?>">
-									<?php if ( has_post_thumbnail( $post_id ) ) : ?>
-										<?php echo get_the_post_thumbnail( $post_id, 'property_card', [ 'class' => 'ovl-property-card__image', 'loading' => 'lazy' ] ); ?>
-									<?php else : ?>
-										<span class="ovl-property-card__noimage">No Image</span>
-									<?php endif; ?>
+					<a class="ovl-property-card__thumb" href="<?php echo esc_url( $permalink ); ?>">
+						<?php if ( has_post_thumbnail( $post_id ) ) : ?>
+							<?php echo get_the_post_thumbnail( $post_id, 'property_card', [ 'class' => 'ovl-property-card__image', 'loading' => 'lazy' ] ); ?>
+						<?php else : ?>
+							<span class="ovl-property-card__noimage">No Image</span>
+						<?php endif; ?>
 
-									<?php if ( $is_new ) : ?>
-										<span class="ovl-property-card__badge is-new">NEW</span>
-									<?php endif; ?>
-								</a>
-								<div class="ovl-property-card__footer ovl-property-card__footer--media">
-									<a class="ovl-property-card__cta" href="<?php echo esc_url( $permalink ); ?>">
-										物件詳細
-									</a>
-								</div>
-							</div>
+						<?php if ( $is_new ) : ?>
+							<span class="ovl-property-card__badge is-new">NEW</span>
+						<?php endif; ?>
+					</a>
+				</div>
 
-							<div class="ovl-property-card__body">
-								<div class="ovl-property-card__head">
-									<div class="ovl-property-card__labels">
-										<span class="ovl-property-card__badge-pill"><?php echo esc_html( $status_label ); ?></span>
-										<?php if ( $is_new ) : ?>
-											<span class="ovl-property-card__badge-pill is-accent">新着</span>
-										<?php endif; ?>
-									</div>
+				<div class="ovl-property-card__body">
+					<div class="ovl-property-card__head">
+						<div class="ovl-property-card__labels">
+							<?php if ( '公開中' !== $status_label ) : ?>
+								<span class="ovl-property-card__badge-pill"><?php echo esc_html( $status_label ); ?></span>
+							<?php endif; ?>
+							<?php if ( $is_new ) : ?>
+								<span class="ovl-property-card__badge-pill is-accent">新着</span>
+							<?php endif; ?>
+						</div>
 									<h3 class="ovl-property-card__title">
 										<a href="<?php echo esc_url( $permalink ); ?>">
 											<?php the_title(); ?>
@@ -211,23 +207,25 @@ add_shortcode(
 												</div>
 											<?php endforeach; ?>
 										</div>
-									<?php endforeach; ?>
-								</div>
+					<?php endforeach; ?>
+				</div>
 
-								<div class="ovl-favorite-control">
-									<button
-										type="button"
-										class="<?php echo esc_attr( $button_classes ); ?>"
-										data-ovl-fav="1"
-										data-property-id="<?php echo esc_attr( $post_id ); ?>"
-										aria-pressed="<?php echo $is_fav ? 'true' : 'false'; ?>"
-									>
-										<span class="ovl-favorite-button__icon" aria-hidden="true">♡</span>
-										<span class="ovl-favorite-button__label"><?php echo esc_html( $button_label ); ?></span>
-									</button>
-								</div>
-							</div>
-						</article>
+				<?php $compact_favorite_label = $is_fav ? 'お気に入り済み' : 'お気に入り'; ?>
+				<div class="ovl-property-card__actions">
+					<a class="ovl-property-card__cta" href="<?php echo esc_url( $permalink ); ?>">物件詳細</a>
+					<button
+						type="button"
+						class="<?php echo esc_attr( $button_classes ); ?>"
+						data-ovl-fav="1"
+						data-property-id="<?php echo esc_attr( $post_id ); ?>"
+						aria-pressed="<?php echo $is_fav ? 'true' : 'false'; ?>"
+					>
+						<span class="ovl-favorite-button__icon" aria-hidden="true">♡</span>
+						<span class="ovl-favorite-button__label"><?php echo esc_html( $compact_favorite_label ); ?></span>
+					</button>
+				</div>
+			</div>
+		</article>
 					<?php endwhile; ?>
 				</div>
 			<?php else : ?>

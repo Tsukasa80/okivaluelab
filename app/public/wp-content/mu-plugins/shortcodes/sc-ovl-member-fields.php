@@ -1,6 +1,41 @@
 <?php
 // OVL: Display WP-Members user fields (checked for "register") as read-only rows.
 
+if ( ! function_exists( 'ovl_member_fields_flatten_value' ) ) {
+	function ovl_member_fields_flatten_value( $value ): array {
+		$flattened = [];
+		foreach ( (array) $value as $item ) {
+			if ( is_array( $item ) ) {
+				if ( isset( $item['label'] ) && is_scalar( $item['label'] ) ) {
+					$flattened[] = sanitize_text_field( (string) $item['label'] );
+					continue;
+				}
+				if ( isset( $item['value'] ) && is_scalar( $item['value'] ) ) {
+					$flattened[] = sanitize_text_field( (string) $item['value'] );
+					continue;
+				}
+				$flattened = array_merge( $flattened, ovl_member_fields_flatten_value( $item ) );
+				continue;
+			}
+			if ( is_object( $item ) ) {
+				if ( method_exists( $item, '__toString' ) ) {
+					$flattened[] = sanitize_text_field( (string) $item );
+				} else {
+					$flattened[] = sanitize_text_field( wp_json_encode( $item ) );
+				}
+				continue;
+			}
+			if ( null === $item ) {
+				continue;
+			}
+			$flattened[] = sanitize_text_field( (string) $item );
+		}
+		return array_values( array_filter( $flattened, static function( $text ) {
+			return '' !== $text;
+		} ) );
+	}
+}
+
 if ( ! function_exists( 'ovl_shortcode_member_fields' ) ) {
 	/**
 	 * Renders a read-only list of WP-Members fields for the current user.
@@ -72,7 +107,7 @@ if ( ! function_exists( 'ovl_shortcode_member_fields' ) ) {
 			$label_overrides = [
 				'first_name'        => '名',
 				'last_name'         => '姓',
-				'billing_state'     => '都道府県',
+				'prefecture'     => '都道府県',
 				'billing_city'      => '市区町村',
 				'billing_address_1' => '住所（番地）',
 				'billing_address_2' => '住所（建物名など）',
@@ -149,14 +184,22 @@ if ( ! function_exists( 'ovl_shortcode_member_fields' ) ) {
 		];
 
 		$api = null;
+		$api_fields = [];
 		if ( class_exists( 'WP_Members_API' ) ) {
 			$api = new WP_Members_API();
+			$api_fields = wpmem_fields( 'all' );
+			if ( ! is_array( $api_fields ) ) {
+				$api_fields = [];
+			}
 		}
 
 		$rows = [];
 
 		foreach ( $fields as $meta_key => $field ) {
 			$meta_key = (string) $meta_key;
+			if ( '' === $meta_key ) {
+				continue;
+			}
 			if ( in_array( $meta_key, $exclude_meta_keys, true ) ) {
 				continue;
 			}
@@ -173,12 +216,12 @@ if ( ! function_exists( 'ovl_shortcode_member_fields' ) ) {
 
 			$value = get_the_author_meta( $meta_key, $user_id );
 
-			if ( $api && in_array( $type, [ 'select', 'radio', 'multiselect', 'multicheckbox', 'image', 'file' ], true ) ) {
+			if ( $api && isset( $api_fields[ $meta_key ] ) && in_array( $type, [ 'select', 'radio', 'multiselect', 'multicheckbox', 'image', 'file' ], true ) ) {
 				$value = $api->get_field_display_value( $meta_key, $user_id, is_scalar( $value ) ? (string) $value : null );
 			}
 
 			if ( is_array( $value ) ) {
-				$value = implode( '、', array_map( 'sanitize_text_field', array_map( 'strval', $value ) ) );
+				$value = implode( '、', ovl_member_fields_flatten_value( $value ) );
 			}
 
 			$value = trim( (string) $value );
