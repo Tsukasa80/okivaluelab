@@ -1,0 +1,193 @@
+/* Header spacing and overlap fixes */
+
+/* Desktop & General */
+.site-header {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.site-header .header-inner.has-global-padding {
+    padding-left: 0 !important;
+    padding-right: clamp(1.5rem, 4vw, 3.5rem) !important;
+}
+.site-header.is-layout-flex {
+    gap: clamp(1rem, 2vw, 1.75rem) !important;
+}
+.header-nav-auth.is-layout-flex {
+    gap: clamp(0.75rem, 1.6vw, 1.25rem) !important;
+}
+.site-header .wp-block-navigation-item__content {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+}
+
+/* Prevent menu items from stretching across available width. */
+.site-header .wp-block-navigation .wp-block-navigation__container {
+    justify-content: flex-end !important;
+    column-gap: clamp(0.75rem, 1.2vw, 1.05rem) !important;
+}
+
+/* Keep icon and label a bit tighter. */
+.site-header .wp-block-navigation .wp-block-navigation-item__content,
+.site-header .wp-block-navigation .wp-block-navigation-item.nav-icon>a {
+    gap: 0.4rem !important;
+}
+
+@media (max-width: 1200px) {
+    .site-header .wp-block-navigation-item__content {
+        padding-left: 0.35rem !important;
+        padding-right: 0.35rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Match auth (mypage/login/logout) to nav sizing at this breakpoint. */
+    .site-header .header-auth,
+    .site-header .header-auth__link,
+    .site-header .header-auth__link a,
+    .site-header .header-auth a,
+    .site-header .header-auth .ovl-logout-link {
+        font-size: 0.9rem !important;
+        line-height: 1.1 !important;
+    }
+}
+
+@media (max-width: 1050px) {
+    .site-header .wp-block-navigation-item__content {
+        padding-left: 0.3rem !important;
+        padding-right: 0.3rem !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Match auth (mypage/login/logout) to nav sizing at this breakpoint. */
+    .site-header .header-auth,
+    .site-header .header-auth__link,
+    .site-header .header-auth__link a,
+    .site-header .header-auth a,
+    .site-header .header-auth .ovl-logout-link {
+        font-size: 0.85rem !important;
+        line-height: 1.1 !important;
+    }
+}
+
+/* Tablet / Small Screen logic */
+@media (max-width: 1000px) {
+    .site-header .custom-logo-link {
+        width: auto !important;
+        max-width: 140px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .site-header .custom-logo-link img {
+        width: 100% !important;
+        height: auto !important;
+    }
+}
+
+@media (max-width: 950px) {
+
+    /* Prevent overlap with logo */
+    .site-header .wp-block-navigation,
+    .site-header .header-nav-auth {
+        margin-left: 15px !important;
+        flex-grow: 1 !important;
+        justify-content: flex-end !important;
+    }
+
+    /* Force consistent font-size for ALL items */
+    .site-header .wp-block-navigation-item__content,
+    .site-header .wp-block-navigation-item__content span,
+    .site-header .wp-block-navigation-item__label,
+    .site-header .ovl-nav-auth-item a,
+    .site-header .ovl-nav-auth-item span,
+    .site-header .header-nav-auth span,
+    .site-header .header-auth__link,
+    .site-header .header-auth__link a,
+    .site-header .header-auth__link p {
+        font-size: 0.72rem !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        padding-inline: 0.05rem !important;
+        margin: 0 !important;
+    }
+
+    /* Ensure auth links inherit the same font-size as nav items. */
+    .site-header .header-auth {
+        font-size: 0.72rem !important;
+        line-height: 1 !important;
+    }
+
+    .site-header .header-auth a,
+    .site-header .header-auth .ovl-logout-link,
+    .site-header .header-auth__link,
+    .site-header .header-auth__link a {
+        font-size: 0.72rem !important;
+        line-height: 1 !important;
+    }
+
+    /* Ensure the icon and text are tight */
+    .site-header .wp-block-navigation-item__label,
+    .site-header .wp-block-navigation-item__content svg,
+    .site-header .nav-icon::before {
+        margin-left: 1px !important;
+        margin-right: 1px !important;
+    }
+
+    /* Icons and spacing for auth buttons */
+    .header-nav-auth {
+        gap: 0.1rem !important;
+        justify-content: flex-end !important;
+        flex-shrink: 0 !important;
+    }
+
+    .header-auth {
+        gap: 0.1rem !important;
+        margin-left: 0.1rem !important;
+    }
+}
+
+@media (max-width: 850px) {
+    .site-header .custom-logo-link {
+        max-width: 105px !important;
+    }
+
+    .site-header .wp-block-navigation-item__content,
+    .site-header .wp-block-navigation-item__content span,
+    .site-header .wp-block-navigation-item__label,
+    .site-header .ovl-nav-auth-item a,
+    .site-header .ovl-nav-auth-item span,
+    .site-header .header-auth__link,
+    .site-header .header-auth__link a {
+        font-size: 0.68rem !important;
+    }
+
+    .site-header .header-auth {
+        font-size: 0.68rem !important;
+    }
+
+    .site-header .header-auth a,
+    .site-header .header-auth .ovl-logout-link,
+    .site-header .header-auth__link,
+    .site-header .header-auth__link a {
+        font-size: 0.68rem !important;
+    }
+}
+
+/* Tablet width: allow the inline menu to wrap to avoid overlapping the logo. */
+@media (max-width: 820px) {
+    .site-header .wp-block-navigation__container {
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        row-gap: 0.35rem !important;
+        column-gap: 0.6rem !important;
+    }
+}
+
+/* WP admin bar should stay fixed on mobile; absolute positioning can hide the header controls. */
+@media screen and (max-width: 600px) {
+    body.admin-bar #wpadminbar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+}

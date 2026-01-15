@@ -125,7 +125,7 @@
       registerError.className = "ovl-register-error";
       registerError.setAttribute("role", "alert");
       registerError.hidden = true;
-      registerError.textContent = "プライバシーの同意にチェックをお願いします。";
+      registerError.textContent = "プライバシーポリシーの同意にチェックをお願いします。";
       registerButton.insertAdjacentElement("afterend", registerError);
     }
 

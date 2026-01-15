@@ -22,6 +22,30 @@ if ( ! function_exists( 'ovl_filter_body_class' ) ) {
 
 add_filter( 'body_class', 'ovl_filter_body_class' ); // OVL: Hook stays presentation-only.
 
+if ( ! function_exists( 'ovl_filter_show_admin_bar' ) ) {
+	/**
+	 * Hides the WordPress admin bar on the front end for non-admin users.
+	 *
+	 * @param bool $show Whether to show the admin bar.
+	 *
+	 * @return bool
+	 */
+	function ovl_filter_show_admin_bar( bool $show ): bool {
+		// OVL: Keep admin bar for site managers, hide for member users on front-end.
+		if ( is_admin() ) {
+			return $show;
+		}
+
+		if ( current_user_can( 'manage_options' ) ) {
+			return $show;
+		}
+
+		return false;
+	}
+}
+
+add_filter( 'show_admin_bar', 'ovl_filter_show_admin_bar', 20 ); // OVL: Front-end UI polish.
+
 if ( ! function_exists( 'ovl_get_auth_link_markup' ) ) {
 	/**
 	 * Returns a login/logout link that templates can place anywhere.

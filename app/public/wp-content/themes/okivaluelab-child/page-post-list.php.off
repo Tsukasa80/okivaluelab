@@ -1,0 +1,134 @@
+<?php
+/**
+ * Disabled: ブロックテンプレート（templates/post-list.html）へ移行済み
+ */
+
+get_header();
+
+// Block header/footer を使っているため、PHPテンプレでも template-part を描画する。
+echo do_blocks( '<!-- wp:template-part {"slug":"header","area":"header"} /-->' );
+
+if ( have_posts() ) {
+  the_post();
+}
+
+$allowed_category_slugs = [ 'news', 'column' ];
+
+$selected_category = isset( $_GET['ovl_cat'] ) ? sanitize_title( wp_unslash( $_GET['ovl_cat'] ) ) : '';
+$selected_category = in_array( $selected_category, $allowed_category_slugs, true ) ? $selected_category : '';
+
+// 固定ページは paged/page 両睨み。
+$paged = max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
+
+$query_args = [
+  'post_type'      => 'post',
+  'post_status'    => 'publish',
+  'posts_per_page' => 12,
+  'paged'          => $paged,
+  'orderby'        => 'date',
+  'order'          => 'DESC',
+];
+
+if ( $selected_category ) {
+  $query_args['category_name'] = $selected_category;
+}
+
+$post_query = new WP_Query( $query_args );
+
+$chips = [
+  ''       => 'すべて',
+  'news'   => 'お知らせ',
+  'column' => 'コラム',
+];
+?>
+
+<main class="wp-block-group ovl-property-theme ovl-show-title ovl-post-list" style="margin-top:0">
+  <h1 class="wp-block-post-title"><?php the_title(); ?></h1>
+
+  <div class="ovl-post-list__intro entry-content">
+    <?php the_content(); ?>
+  </div>
+
+  <nav class="ovl-post-list__chips" aria-label="<?php echo esc_attr__( 'カテゴリー', 'okivaluelab-child' ); ?>">
+    <?php
+    $base_url = get_permalink();
+    foreach ( $chips as $slug => $label ) {
+      $url = $slug ? add_query_arg( 'ovl_cat', $slug, $base_url ) : $base_url;
+      $is_current = ( $slug === $selected_category ) || ( '' === $slug && '' === $selected_category );
+      printf(
+        '<a class="ovl-chip %s" href="%s"%s>%s</a>',
+        $is_current ? 'is-current' : '',
+        esc_url( $url ),
+        $is_current ? ' aria-current="page"' : '',
+        esc_html( $label )
+      );
+    }
+    ?>
+  </nav>
+
+  <?php if ( $post_query->have_posts() ) : ?>
+    <div class="ovl-post-grid" role="list">
+      <?php
+      while ( $post_query->have_posts() ) :
+        $post_query->the_post();
+
+        $categories = get_the_category();
+        $category_name = $categories ? $categories[0]->name : '';
+        ?>
+        <a class="ovl-post-card" href="<?php echo esc_url( get_permalink() ); ?>" role="listitem">
+          <div class="ovl-post-card__thumb">
+            <?php
+            if ( has_post_thumbnail() ) {
+              the_post_thumbnail(
+                'medium_large',
+                [
+                  'loading' => 'lazy',
+                ]
+              );
+            }
+            ?>
+          </div>
+
+          <div class="ovl-post-card__meta">
+            <?php if ( $category_name ) : ?>
+              <span class="ovl-post-card__cat"><?php echo esc_html( $category_name ); ?></span>
+            <?php endif; ?>
+            <time class="ovl-post-card__date" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>">
+              <?php echo esc_html( get_the_date() ); ?>
+            </time>
+          </div>
+
+          <h2 class="ovl-post-card__title"><?php the_title(); ?></h2>
+        </a>
+      <?php endwhile; ?>
+    </div>
+
+    <nav class="ovl-post-list__pager" aria-label="<?php echo esc_attr__( 'ページ送り', 'okivaluelab-child' ); ?>">
+      <?php
+      $big  = 999999999;
+      $base = str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) );
+
+      echo paginate_links(
+        [
+          'base'      => $base,
+          'format'    => 'page/%#%/',
+          'current'   => $paged,
+          'total'     => (int) $post_query->max_num_pages,
+          'mid_size'  => 1,
+          'prev_text' => '前へ',
+          'next_text' => '次へ',
+          'add_args'  => $selected_category ? [ 'ovl_cat' => $selected_category ] : false,
+        ]
+      );
+      ?>
+    </nav>
+  <?php else : ?>
+    <p><?php echo esc_html__( '該当する投稿がありません。', 'okivaluelab-child' ); ?></p>
+  <?php endif; ?>
+
+  <?php wp_reset_postdata(); ?>
+</main>
+
+<?php
+echo do_blocks( '<!-- wp:template-part {"slug":"footer","area":"footer"} /-->' );
+get_footer();
