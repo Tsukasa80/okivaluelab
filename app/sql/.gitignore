@@ -1,0 +1,3 @@
+# Local-only database dumps (do not commit).
+/local-before-restore.sql
+

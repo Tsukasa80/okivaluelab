@@ -1,0 +1,4 @@
+# Local-only diagnostic files (do not commit).
+/local-phpinfo.php
+/local-xdebuginfo.php
+
