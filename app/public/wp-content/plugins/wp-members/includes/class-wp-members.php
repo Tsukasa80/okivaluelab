@@ -478,6 +478,15 @@ class WP_Members {
 	public $admin;
 
 	/**
+	 * Handle the filesystem.
+	 * 
+	 * @since 3.5.5
+	 * @access public
+	 * @var object
+	 */
+	public $filesystem;
+
+	/**
 	 * Objects for premium extensions.
 	 * 
 	 * @access public
@@ -587,9 +596,9 @@ class WP_Members {
 		 */
 		do_action_deprecated( 'wpmem_settings_loaded', array(), '3.2.0', 'wpmem_after_init' );
 	
-		// Preload the expiration module, if available.
+		// @deprecated 3.5.5, kept for legacy purposes. Preload the expiration module, if available.
 		$exp_active = ( function_exists( 'wpmem_exp_init' ) || function_exists( 'wpmem_set_exp' ) ) ? true : false;
-		define( 'WPMEM_EXP_MODULE', $exp_active ); 
+		define( 'WPMEM_EXP_MODULE', $exp_active ); // @deprecated 3.5.5, kept for legacy purposes.
 	
 		// Load actions and filters.
 		$this->load_hooks();
@@ -1606,10 +1615,11 @@ class WP_Members {
 	 * @since 3.2.0
 	 */
 	public function do_loginout_script() {
-		/** This filter is defined in /includes/api/api.php */
-		$logout = apply_filters( 'wpmem_logout_link', add_query_arg( 'a', 'logout' ) );
-		?><script type="text/javascript">
-			jQuery('.wpmem_loginout').html('<a class="login_button" href="<?php echo esc_url( $logout ); ?>"><?php echo wpmem_get_text( 'menu_logout' ); ?></a>');
+		$logout = wpmem_logout_link(); ?>
+		<script type="text/javascript">
+			jQuery(document).ready(function() {
+				jQuery('.wpmem_loginout').html('<a class="login_button" href="<?php echo esc_url( $logout ); ?>"><?php echo wpmem_get_text( 'menu_logout' ); ?></a>');
+			});
 		</script><?php
 	}
 		
@@ -1919,8 +1929,7 @@ class WP_Members {
 		$redirect = ( is_user_logged_in() ) ? $args['logout_redirect_to'] : $args['login_redirect_to'];
 		$text     = ( is_user_logged_in() ) ? $args['logout_text']        : $args['login_text'];
 		if ( is_user_logged_in() ) {
-			/** This filter is defined in /includes/api/api.php */
-			$link = apply_filters( 'wpmem_logout_link', add_query_arg( 'a', 'logout' ) );
+			$link = wpmem_logout_link();
 		} else {
 			$link = wpmem_login_url( $redirect );
 		}
@@ -1966,6 +1975,15 @@ class WP_Members {
 		return ( is_wp_error( $this->error ) && $this->error->has_errors() ) ? true : false;
 	}
 
+	/**
+	 * Loads the activation object if enabled.
+	 * 
+	 * @since Unknown
+	 * 
+	 * @todo Can this be evaluated for loading based only when specifically
+	 *       needed for the actual processed used?
+	 * @todo Apart from the above, can this load at load_dependent_classes()?
+	 */
 	public function after_wpmem_loaded() {
 		if ( wpmem_is_enabled( 'act_link' ) ) {
 			$this->act_newreg = new WP_Members_Validation_Link;

@@ -1,0 +1,15 @@
+<!--
+  （無効化）物件（CPT: property）個別表示テンプレート
+  現在は `single-property.php` のレイアウトを優先するため .off にしています。
+-->
+<!-- wp:template-part {"slug":"header","area":"header"} /-->
+<!-- wp:group {"tagName":"main","className":"property-single","layout":{"type":"constrained"}} -->
+<main class="wp-block-group property-single">
+	<!-- wp:shortcode -->
+	 
+	[ovl_page slug="property-detail"]
+	<!-- /wp:shortcode -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer"} /-->

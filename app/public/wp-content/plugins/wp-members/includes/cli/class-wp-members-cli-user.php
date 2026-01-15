@@ -150,8 +150,11 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		 *
 		 * ## OPTIONS
 		 *
-		 * <pending|activated|deactivated|confirmed|unconfirmed>
+		 * <pending|activated|deactivated|confirmed|unconfirmed|memberships>
 		 * : status of the user
+		 * 
+		 * [--id=<user_id>] 
+		 * : User ID if listing memberships.
 		 *
 		 * @subcommand list
 		 *
@@ -160,9 +163,14 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		public function list_users( $args, $assoc_args ) {
 
 			// Accepted list args.
-			$accepted = array( 'pending', 'activated', 'deactivated', 'confirmed', 'unconfirmed' );
+			$accepted = array( 'pending', 'activated', 'deactivated', 'confirmed', 'unconfirmed', 'memberships', 'membership' );
 
 			$status = $args[0];
+
+			if ( ( 'memberships' == $status || 'membership' == $status ) && ! isset( $assoc_args['id'] ) ) {
+				WP_CLI::error( 'Listing user memberships requires a user ID as [--id]' );
+			}
+
 			switch ( $status ) {
 				case 'pending':
 					$users = wpmem_get_pending_users();
@@ -179,23 +187,49 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				case 'unconfirmed':
 					$users = wpmem_get_users_by_meta( '_wpmem_user_confirmed', false );
 					break;
+				case 'memberships':
+				case 'membership':
+					$user_id = $assoc_args['id'];
+					$memberships = wpmem_get_user_memberships( $user_id );
+					break;
 			}
 
-			if ( ! empty( $users ) ) {
-				foreach ( $users as $user_id ) {
-					$user = get_userdata( $user_id );
-					$list[] = array(
-						'ID'       => $user->ID,
-						'username' => $user->user_login,
-						'email'    => $user->user_email,
-						'status'   => $status,
+			if ( 'memberships' == $status || 'membership' == $status ) {
+
+				foreach ( $memberships as $key => $time ) {
+
+					$expires = rktgk_format_date( $time );
+					$days_to_go = wpmem_get_user_time_remaining( $key, $user_id );
+
+					$list[] = array( 
+						'membership' => wpmem_get_membership_name( $key ),
+						'meta' => $key,
+						'expires' => $expires,
+						'remaining' => $days_to_go . ' days',
 					);
 				}
-
-				$formatter = new \WP_CLI\Formatter( $assoc_args, array( 'ID', 'username', 'email', 'status' ) );
+				
+				$formatter = new \WP_CLI\Formatter( $assoc_args, array( 'membership', 'meta', 'expires', 'remaining' ) );
 				$formatter->display_items( $list );
+
 			} else {
-				WP_CLI::line( sprintf( 'Currently there are no %s users.', $status ) );
+
+				if ( ! empty( $users ) ) {
+					foreach ( $users as $user_id ) {
+						$user = get_userdata( $user_id );
+						$list[] = array(
+							'ID'       => $user->ID,
+							'username' => $user->user_login,
+							'email'    => $user->user_email,
+							'status'   => $status,
+						);
+					}
+
+					$formatter = new \WP_CLI\Formatter( $assoc_args, array( 'ID', 'username', 'email', 'status' ) );
+					$formatter->display_items( $list );
+				} else {
+					WP_CLI::line( sprintf( 'Currently there are no %s users.', $status ) );
+				}
 			}
 		}
 
@@ -401,6 +435,70 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			wpmem_set_user_membership( $membership, $user->ID, $date );
 
 			WP_CLI::line( sprintf( 'Set %s membership for user %s', $membership, $user->user_login ) );
+		}
+
+		/**
+		 * Displays a given users expiration date for a specific membership.
+		 * 
+		 * --membership=<meta_key>
+		 * : The membership to check.
+		 * 
+		 * --id=<user_id>
+		 * : The user ID to check.
+		 * 
+		 * [--format=<date_format>] 
+		 * : Date format to display (defaults to WP date format setting).
+		 */
+		public function expires( $args, $assoc_args ) {
+			$product_key = $assoc_args['membership'];
+			$user_id     = $assoc_args['id'];
+			$format      = ( isset( $assoc_args['format'] ) ) ? $assoc_args['format'] : get_option( 'date_format' );
+			$expires     = wpmem_get_user_expiration( $product_key, $user_id, $format );
+			WP_CLI::line( sprintf( 'User membership for %s expires %s.', wpmem_get_membership_name( $product_key ), $expires ) );
+		}
+
+		/**
+		 * Displays the user's remaining time for a specific membership.
+		 * 
+		 * --membership=<meta_key>
+		 * : The membership to check.
+		 * 
+		 * --id=<user_id>
+		 * : The user ID to check.
+		 * 
+		 * [--interval=<days|months>] 
+		 * : Date interval displayed as result (defaults to "days").
+		 */
+		public function remaining( $args, $assoc_args ) {
+			$product_key = $assoc_args['membership'];
+			$user_id     = $assoc_args['id'];
+			$interval    = ( isset( $assoc_args['interval'] ) ) ? $interval : 'days';
+			$remaining   = wpmem_get_user_time_remaining( $product_key, $user_id, $interval );
+			WP_CLI::line( sprintf( 'User %s has %s %s remaining for %s.', $user_id, $remaining, $interval, wpmem_get_membership_name( $product_key ) ) );
+		}
+
+		/**
+		 * Gets prorated value of user's remaining time for a specific membership.
+		 * 
+		 * --membership=<meta_key>
+		 * : The membership to check.
+		 * 
+		 * --id=<user_id>
+		 * : The user ID to check.
+		 * 
+		 * --value=<price>
+		 * : The full value of the membership to prorate.
+		 * 
+		 * [--interval=<days|months>] 
+		 * : Date interval displayed as result (defaults to "days").
+		 */
+		public function prorate( $args, $assoc_args ) {
+			$product_key = $assoc_args['membership'];
+			$user_id     = $assoc_args['id'];
+			$value       = $assoc_args['value'];
+			$interval    = ( isset( $assoc_args['interval'] ) ) ? $assoc_args['interval'] : 'days';
+			$val_remaining = wpmem_prorate_membership( $product_key, $user_id, $value, $interval );
+			WP_CLI::line( sprintf( 'Remaining value of %s for user ID %s is %s', wpmem_get_membership_name( $product_key ), $user_id, round( $val_remaining, 2 ) ) );
 		}
 
 		/**

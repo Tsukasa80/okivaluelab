@@ -1,11 +1,87 @@
-<!-- wp:template-part {"slug":"header-admin","area":"header"} /-->
-<!-- wp:template-part {"slug":"header-member","area":"header"} /-->
-<!-- wp:template-part {"slug":"header-guest","area":"header"} /-->
+<!-- wp:template-part {"slug":"header","area":"header"} /-->
+<!--
+  投稿（個別記事）の標準テンプレート。
+  全投稿を「記事（標準）」の見た目に統一するため、この single.html に集約する。
+-->
 
-<!-- wp:group {"tagName":"main"} -->
-<main class="wp-block-group">
-  <!-- wp:post-title {"level":1} /-->
-  <!-- wp:post-content /-->
+<!-- wp:group {"tagName":"main","className":"ovl-post-single ovl-column-article","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"clamp(16px,4vw,20px)","right":"clamp(16px,4vw,20px)"}}},"layout":{"type":"constrained","contentSize":"680px"}} -->
+<main class="wp-block-group ovl-post-single ovl-column-article" style="padding-right:clamp(16px,4vw,20px);padding-bottom:var(--wp--preset--spacing--60);padding-left:clamp(16px,4vw,20px)">
+		<!-- wp:group {"className":"ovl-post-single__nav","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ovl-post-single__nav">
+			<!-- wp:paragraph {"className":"ovl-back-link"} -->
+			<p class="ovl-back-link"><a href="/post-list/">コラム一覧を見る</a></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:post-date {"className":"ovl-post-single__date"} /-->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"ovl-post-single__meta","layout":{"type":"flex","justifyContent":"flex-start","flexWrap":"wrap","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ovl-post-single__meta">
+			<!-- wp:post-terms {"term":"category","className":"ovl-post-single__cats"} /-->
+			<!-- wp:post-terms {"term":"post_tag","className":"ovl-post-single__tags"} /-->
+		</div>
+	<!-- /wp:group -->
+
+	<!-- wp:post-title {"level":1,"className":"ovl-post-single__title"} /-->
+	<!-- wp:post-featured-image {"className":"ovl-post-single__featured","style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|50"}}}} /-->
+
+
+		<!-- wp:group {"className":"c-toc","style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|50"}}}} -->
+	<div class="wp-block-group c-toc">
+			<!-- wp:heading {"level":2,"className":"c-toc__title"} -->
+			<h2 class="wp-block-heading c-toc__title">目次</h2>
+			<!-- /wp:heading -->
+
+			<!--
+				TOCプラグインなし運用のため、本文（.c-article-content）のH2/H3からJSで自動生成する。
+				出力クラスは core/table-of-contents の標準クラスに寄せてCSSを共通化。
+			-->
+			<!-- wp:group {"className":"c-toc__body"} -->
+			<div class="wp-block-group c-toc__body">
+				<!-- wp:html -->
+				<nav class="wp-block-table-of-contents c-toc__nav" aria-label="目次">
+					<ul class="wp-block-table-of-contents__list c-toc__list"></ul>
+				</nav>
+				<!-- /wp:html -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:post-content {"className":"c-article-content"} /-->
+
+		<!-- wp:group {"className":"c-cta","style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
+		<div class="wp-block-group c-cta">
+			<!-- wp:heading {"level":2} -->
+			<h2 class="wp-block-heading">次のアクション</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>一部の記事では、より具体的な内容を会員限定で公開しています。</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons -->
+			<div class="wp-block-buttons">
+				<!-- wp:button {"className":"is-style-fill"} -->
+				<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="/member-register/">会員登録</a></div>
+				<!-- /wp:button -->
+				<!-- wp:button {"className":"is-style-outline"} -->
+				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/property_list/">限定物件を見る</a></div>
+				<!-- /wp:button -->
+
+			</div>
+			<!-- /wp:buttons -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"ovl-post-single__footer","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+		<div class="wp-block-group ovl-post-single__footer">
+			<!-- wp:paragraph {"className":"ovl-back-link"} -->
+			<p class="ovl-back-link"><a href="/post-list/">コラム一覧を見る</a></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 

@@ -85,12 +85,12 @@ return function ($file) {
     {
         if ('fluentform/fluentform.php' == $file) {
             $row_meta = [
-                'docs'    => '<a rel="noopener" href="https://fluentforms.com/docs" style="color: #197efb;font-weight: 600;" aria-label="' . esc_attr(esc_html__('View FluentForms Documentation', 'fluentform')) . '" target="_blank">' . esc_html__('Docs', 'fluentform') . '</a>',
-                'support' => '<a rel="noopener" href="https://wpmanageninja.com/support-tickets/#/" style="color: #197efb;font-weight: 600;" aria-label="' . esc_attr(esc_html__('Get Support', 'fluentform')) . '" target="_blank">' . esc_html__('Support', 'fluentform') . '</a>',
-                'developer_docs' => '<a rel="noopener" href="https://developers.fluentforms.com" style="color: #197efb;font-weight: 600;" aria-label="' . esc_attr(esc_html__('Developer Docs', 'fluentform')) . '" target="_blank">' . esc_html__('Developer Docs', 'fluentform') . '</a>',
+                'docs'    => '<a rel="noopener" href="https://fluentforms.com/docs" style="color: #197efb;font-weight: 600;" aria-label="' . esc_attr__('View FluentForms Documentation', 'fluentform') . '" target="_blank">' . esc_html__('Docs', 'fluentform') . '</a>',
+                'support' => '<a rel="noopener" href="https://wpmanageninja.com/support-tickets/#/" style="color: #197efb;font-weight: 600;" aria-label="' . esc_attr__('Get Support', 'fluentform') . '" target="_blank">' . esc_html__('Support', 'fluentform') . '</a>',
+                'developer_docs' => '<a rel="noopener" href="https://developers.fluentforms.com" style="color: #197efb;font-weight: 600;" aria-label="' . esc_attr__('Developer Docs', 'fluentform') . '" target="_blank">' . esc_html__('Developer Docs', 'fluentform') . '</a>',
             ];
             if (!defined('FLUENTFORMPRO')) {
-                $row_meta['pro'] = '<a rel="noopener" href="https://fluentforms.com" style="color: #7742e6;font-weight: bold;" aria-label="' . esc_attr(esc_html__('Upgrade to Pro', 'fluentform')) . '" target="_blank">' . esc_html__('Upgrade to Pro', 'fluentform') . '</a>';
+                $row_meta['pro'] = '<a rel="noopener" href="https://fluentforms.com" style="color: #7742e6;font-weight: bold;" aria-label="' . esc_attr__('Upgrade to Pro', 'fluentform') . '" target="_blank">' . esc_html__('Upgrade to Pro', 'fluentform') . '</a>';
             }
             return array_merge($links, $row_meta);
         }

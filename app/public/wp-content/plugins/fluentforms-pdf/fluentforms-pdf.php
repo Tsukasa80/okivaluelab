@@ -5,9 +5,10 @@
  * Description: Download entries as pdf with multiple template.
  * Author: WPManageNinja LLC
  * Author URI:  https://wpmanageninja.com
- * Version: 1.1.10
- * Text Domain: fluentform-pdf
+ * Version: 1.1.11
+ * Text Domain: fluentforms-pdf
  * Domain Path: /assets/languages
+ * License: GPLv2 or later
  */
 
 /**
@@ -29,7 +30,7 @@
  */
 
 defined('ABSPATH') or die;
-define('FLUENTFORM_PDF_VERSION', '1.1.10');
+define('FLUENTFORM_PDF_VERSION', '1.1.11');
 define('FLUENTFORM_PDF_PATH', plugin_dir_path(__FILE__));
 define('FLUENTFORM_PDF_URL', plugin_dir_url(__FILE__));
 
@@ -81,13 +82,13 @@ class FluentFormPdf
 
             $class = 'notice notice-error';
 
-            $install_url_text = __('Click Here to Install the Plugin', 'fluentform-pdf');
+            $install_url_text = __('Click Here to Install the Plugin', 'fluentforms-pdf');
 
             if ($pluginInfo->action == 'activate') {
-                $install_url_text = __('Click Here to Activate the Plugin', 'fluentform-pdf');
+                $install_url_text = __('Click Here to Activate the Plugin', 'fluentforms-pdf');
             }
 
-            $message = __('FluentForm pdf Add-On Requires Fluent Forms Plugin, ', 'fluentform-pdf');
+            $message = __('FluentForm pdf Add-On Requires Fluent Forms Plugin, ', 'fluentforms-pdf');
             $message .= '<b><a href="' .$pluginInfo->url . '">' . $install_url_text . '</a></b>';
 
             printf('<div class="%1$s"><p>%2$s</p></div>', esc_attr($class), wp_kses_post($message));
@@ -124,11 +125,6 @@ class FluentFormPdf
 }
 
 add_action('plugins_loaded', function () {
-
-    load_plugin_textdomain(
-        'fluentform-pdf', false, basename(dirname(__FILE__)) . 'assets/languages'
-    );
-
     (new FluentFormPdf())->boot();
 });
 

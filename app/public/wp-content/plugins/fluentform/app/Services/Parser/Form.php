@@ -298,7 +298,7 @@ class Form
      * @param array $with array
      * @return array
      */
-    public function getPaymentFields($with = ['element'])
+    public function getPaymentFields($with = ['element', 'settings'])
     {
         $fields = $this->getInputs($with);
 
@@ -323,6 +323,9 @@ class Form
         $paymentElements = apply_filters('fluentform/form_payment_fields', $data);
 
         return array_filter($fields, function ($field) use ($paymentElements) {
+            if ($field['element'] === 'rangeslider') {
+                return Arr::get($field, 'settings.enable_target_product', 'no') === 'yes';
+            }
             return in_array($field['element'], $paymentElements);
         });
     }

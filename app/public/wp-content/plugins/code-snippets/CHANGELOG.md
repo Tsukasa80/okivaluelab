@@ -1,5 +1,29 @@
 # Changelog
 
+
+## [3.9.3] (2025-12-03)
+
+### Added
+* end-to-end tests to verify the toggle visual state in the snippets list page, improving UI verification and test reliability
+
+### Fixed
+* Fix missing import of common/direction in src/css/manage.scss to restore correct styling and direction-aware layout
+* Fix toggle activation check to ensure the correct transformation value is used when detecting active/inactive state
+
+## [3.9.2] (2025-11-17)
+
+### Changed
+* Introduced a custom scissors icon and updated button title for the TinyMCE extension.
+* Improved back-navigation styling on the edit page.
+* Refined layout for column names and action buttons in the Cloud Snippets list.
+* Enhanced overall styling of cloud-related UI components.
+* Optimized cloud search with more efficient pagination and snippet retrieval.
+* Introduced groundwork to prevent Composer dependency collisions with other plugins.
+
+### Fixed
+* Improved sanitization and normalization across Cloud API and pagination outputs.
+* Resolved various TinyMCE issues reported in the WordPress support forum.
+
 ## [3.9.1] (2025-11-14)
 
 ### Changed

@@ -35,28 +35,28 @@ class GeneralTemplate extends TemplateManager
         return array(
             [
                 'key'       => 'header',
-                'label'     => __('Header Content', 'fluentform-pdf'),
-                'tips'      => __('Write your header content which will be shown every page of the PDF', 'fluentform-pdf'),
+                'label'     => __('Header Content', 'fluentforms-pdf'),
+                'tips'      => __('Write your header content which will be shown every page of the PDF', 'fluentforms-pdf'),
                 'component' => 'wp-editor'
             ],
             [
                 'key'        => 'body',
-                'label'      => __('PDF Body Content', 'fluentform-pdf'),
-                'tips'       => __('Write your Body content for actual PDF body', 'fluentform-pdf'),
+                'label'      => __('PDF Body Content', 'fluentforms-pdf'),
+                'tips'       => __('Write your Body content for actual PDF body', 'fluentforms-pdf'),
                 'component'  => 'wp-editor',
                 'inline_tip' => defined('FLUENTFORMPRO') ?
-                    sprintf(__('You can use Conditional Content in PDF body, for details please check this %s. ',
-                        'fluentform-pdf'),
-                        '<a target="_blank" href="https://wpmanageninja.com/docs/fluent-form/advanced-features-functionalities-in-wp-fluent-form/conditional-shortcodes-in-email-notifications-form-confirmation/">Documentation</a>') : __('Conditional PDF Body Content is supported in Fluent Forms Pro Version',
-                        'fluentform-pdf'),
-
+                    sprintf('%1$s %2$s.',
+                        __('You can use Conditional Content in PDF body, for details please check this', 'fluentforms-pdf'),
+                        '<a target="_blank" href="https://wpmanageninja.com/docs/fluent-form/advanced-features-functionalities-in-wp-fluent-form/conditional-shortcodes-in-email-notifications-form-confirmation/">Documentation</a>'
+                    )
+                    : __('Conditional PDF Body Content is supported in Fluent Forms Pro Version', 'fluentforms-pdf'),
             ],
             [
                 'key'        => 'footer',
-                'label'      => __('Footer Content', 'fluentform-pdf'),
-                'tips'       => __('Write your Footer content which will be shown every page of the PDF', 'fluentform-pdf'),
+                'label'      => __('Footer Content', 'fluentforms-pdf'),
+                'tips'       => __('Write your Footer content which will be shown every page of the PDF', 'fluentforms-pdf'),
                 'component'  => 'wp-editor',
-                'inline_tip' => __('Write your Footer content which will be shown every page of the PDF', 'fluentform-pdf'),
+                'inline_tip' => __('Write your Footer content which will be shown every page of the PDF', 'fluentforms-pdf'),
 
             ]
         );

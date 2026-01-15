@@ -41,7 +41,8 @@ Class Sanitizer
 
 	public static function sanitizeSqlOrderby($arg)
 	{
-		return sanitize_sql_orderby($arg);
+		$sanitized = sanitize_sql_orderby($arg);
+		return $sanitized !== false ? $sanitized : '';
 	}
 
 	public static function sanitizeTextField($arg)

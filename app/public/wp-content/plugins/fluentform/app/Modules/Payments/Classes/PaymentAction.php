@@ -585,7 +585,7 @@ class PaymentAction
                     $subscription['trial_days'] = $plan['trial_days'];
                     $dateTime = current_datetime();
                     $localtime = $dateTime->getTimestamp() + $dateTime->getOffset();
-                    $expirationDate = gmdate('Y-m-d H:i:s', $localtime + absint($plan['trial_days']) * 86400);
+                    $expirationDate = date('Y-m-d H:i:s', $localtime + absint($plan['trial_days']) * 86400);
                     $subscription['expiration_at'] = $expirationDate;
                 }
 

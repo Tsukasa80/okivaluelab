@@ -2,6 +2,9 @@
 
 namespace FluentFormPdf\Classes\Controller;
 
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
 class FontManager
 {
     private $github_repo = 'https://raw.githubusercontent.com/WPManageNinja/mpdf-core-fonts/master/';
@@ -57,7 +60,7 @@ class FontManager
 
         $res_code = wp_remote_retrieve_response_code( $res );
         if ( $res_code !== 200 ) {
-           return new \WP_Error('failed', __('Core Font API Response Failed', 'fluentform-pdf'));
+           return new \WP_Error('failed', __('Core Font API Response Failed', 'fluentforms-pdf'));
         }
         return true;
     }

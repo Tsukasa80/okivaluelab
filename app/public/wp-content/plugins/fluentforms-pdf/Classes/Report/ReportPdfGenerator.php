@@ -151,7 +151,10 @@ class ReportPdfGenerator
                 }
             } catch (\Exception $e) {
                 // Log error but continue with other components
-                error_log("PDF Report component '{$component}' failed: " . $e->getMessage());
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging only when WP_DEBUG is enabled
+                    error_log("PDF Report component '{$component}' failed: " . $e->getMessage());
+                }
             }
         }
 
@@ -190,7 +193,9 @@ class ReportPdfGenerator
         $formStats = Arr::get($reports, 'form_stats', []);
 
         // Format dates for display
+        // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- not performing any date operations
         $startDateFormatted = date('M j, Y', strtotime($startDate));
+        // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- not performing any date operations
         $endDateFormatted = date('M j, Y', strtotime($endDate));
 
         $html = '<div style="font-family: Arial, sans-serif; color: #333;">';
@@ -790,6 +795,7 @@ class ReportPdfGenerator
         $mpdf = new \Mpdf\Mpdf($config);
 
         // Set document properties
+        // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- not performing any date operations
         $fileName = apply_filters('fluentform/report_pdf_filename', 'fluent-forms-report-' . date('Y-m-d'), $startDate, $endDate);
         $title = apply_filters('fluentform/report_pdf_title', 'Fluent Forms Comprehensive Report');
         $author = apply_filters('fluentform/report_pdf_author', 'Fluent Forms');
@@ -899,8 +905,9 @@ class ReportPdfGenerator
         foreach ($downloadableFiles as $downloadableFont) {
             if (in_array($downloadableFont['name'], $essentialFonts)) {
                 $result = $fontManager->download($downloadableFont['name']);
-                if (is_wp_error($result)) {
+                if (is_wp_error($result) && defined('WP_DEBUG') && WP_DEBUG) {
                     // Log error but continue - font substitution should handle this
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging only when WP_DEBUG is enabled
                     error_log('FluentForms PDF: Failed to download font ' . $downloadableFont['name'] . ': ' . $result->get_error_message());
                 }
             }

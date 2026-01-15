@@ -348,7 +348,7 @@ class SubmissionService
 
     public function storeColumnSettings($attributes = [])
     {
-        $formId = Arr::get($attributes, 'form_id');
+        $formId = intval(Arr::get($attributes, 'form_id'));
         $metaKey = sanitize_text_field(Arr::get($attributes, 'meta_key'));
         $metaValue = wp_unslash(Arr::get($attributes, 'settings'));
 
@@ -357,7 +357,7 @@ class SubmissionService
 
     public function handleBulkActions($attributes = [])
     {
-        $formId = Arr::get($attributes, 'form_id');
+        $formId = intval(Arr::get($attributes, 'form_id'));
 
         $submissionIds = fluentFormSanitizer(Arr::get($attributes, 'entries', []));
 
@@ -561,7 +561,7 @@ class SubmissionService
 
     public function storeNote($submissionId, $attributes = [])
     {
-        $formId = (int)Arr::get($attributes, 'form_id');
+        $formId = intval(Arr::get($attributes, 'form_id'));
 
         $content = sanitize_textarea_field($attributes['note']['content']);
         $status = sanitize_text_field($attributes['note']['status']);

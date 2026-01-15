@@ -4,31 +4,31 @@
 	<div class="wp-block-group">
 		[wpmem_logged_out]
 		<!-- wp:group {"style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"color":{"background":"#f4f5f7"}},"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group has-background" style="background-color:#f4f5f7;border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+		<div class="wp-block-group has-background"
+			style="background-color:#ffffff;border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
 			<!-- wp:heading {"level":1} -->
 			<h1 class="wp-block-heading">会員ログイン</h1>
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph -->
-			<p>ご登録済みのメールアドレスとパスワードでログインしてください。ログイン後は元いたページに戻ります。</p>
+			<p>ご登録済みのメールアドレスとパスワードでログインしてください。</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:shortcode -->
 			[wpmem_form login]
 			<!-- /wp:shortcode -->
+
 		</div>
 		<!-- /wp:group -->
 		[/wpmem_logged_out]
 
 		[wpmem_logged_in]
 		<!-- wp:group {"metadata":{"name":"クイックアクション"},"className":"mypage-actions","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group mypage-actions">
-			<!-- wp:heading {"level":1} -->
-			<h2 class="wp-block-heading">マイページ</h2>
-			<!-- /wp:heading -->
 
+
+		<div class="wp-block-group mypage-actions">
 			<!-- wp:heading {"level":3} -->
-			<h3 class="wp-block-heading">すぐできること</h3>
+			<h3 class="wp-block-heading">すぐにできること</h3>
 			<!-- /wp:heading -->
 
 
@@ -84,7 +84,7 @@
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph -->
-			<p class="mypage-account__lead">登録情報の変更や、通知設定、ログアウトはこちらから。</p>
+			<p class="mypage-account__lead">登録情報の確認や変更はこちらから</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:html -->
@@ -113,6 +113,7 @@
 
 		</div>
 		<!-- /wp:group -->
+		[/wpmem_logged_in]
 	</div>
 	<!-- /wp:group -->
 </main>

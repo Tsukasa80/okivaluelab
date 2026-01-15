@@ -929,6 +929,12 @@ class Helper
         return ArrayHelper::get(get_option('_fluentform_global_form_settings'), 'misc.autoload_captcha');
     }
 
+    public static function isAutosaveEnabled()
+    {
+        $autosaveEnabled = ArrayHelper::get(get_option('_fluentform_global_form_settings'), 'misc.autosave_enabled', 'no');
+        return $autosaveEnabled === 'yes';
+    }
+
     public static function maybeDecryptUrl($url)
     {
         $uploadDir = str_replace('/', '\/', FLUENTFORM_UPLOAD_DIR . '/temp');

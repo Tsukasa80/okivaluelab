@@ -441,7 +441,14 @@ if ( ! function_exists( 'ovl_log_download_event' ) ) {
 	 */
 	function ovl_log_download_event( int $user_id, int $post_id, string $file ): void {
 		// OVL: Basic logging for audit; can be extended to webhooks later.
-		error_log( sprintf( '[OVL:download] user=%d post=%d file=%s', $user_id, $post_id, $file ) ); // phpcs:ignore
+		ovl_docs_log(
+			'download',
+			[
+				'user_id' => $user_id,
+				'post_id' => $post_id,
+				'file'    => $file,
+			]
+		);
 	}
 }
 

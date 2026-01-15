@@ -234,7 +234,7 @@ class FormValidationService
             $maxSubmissionCount = apply_filters('fluentform/max_submission_count', 5, $this->form->id);
             $minSubmissionInterval = apply_filters('fluentform/min_submission_interval', 30, $this->form->id);
 
-            $interval = gmdate('Y-m-d H:i:s', strtotime(current_time('mysql')) - $minSubmissionInterval);
+            $interval = date('Y-m-d H:i:s', strtotime(current_time('mysql')) - $minSubmissionInterval);
 
             $clientIp = sanitize_text_field($this->app->request->getIp());
             $submissionCount = wpFluent()->table('fluentform_submissions')
@@ -247,7 +247,7 @@ class FormValidationService
                 throw new ValidationException('', 429, null,  [
                     'errors' => [
                         'restricted' => [
-                            esc_html(apply_filters(
+                            fluentform_sanitize_html(apply_filters(
                                 'fluentform/too_many_requests',
                                 __('Too Many Requests.', 'fluentform'),
                                 $this->form->id
@@ -292,7 +292,7 @@ class FormValidationService
             throw new ValidationException('', 422, null,  [
                 'errors' => [
                     'restricted' => [
-                        esc_html($isAllowed['message']),
+                        fluentform_sanitize_html($isAllowed['message']),
                     ],
                 ],
             ]);
@@ -329,12 +329,12 @@ class FormValidationService
                 if (!count(Helper::arrayFilterRecursive($filteredFormData))) {
                     $defaultMessage = esc_html(__('Sorry! You can\'t submit an empty form.','fluentform'));
                     $customMessage = Arr::get($settings, 'message');
-                    $customMessage = esc_html(apply_filters('fluentform/deny_empty_submission_message', $customMessage, $this->form));
+                    $customMessage = fluentform_sanitize_html(apply_filters('fluentform/deny_empty_submission_message', $customMessage, $this->form));
 
                     throw new ValidationException('', 422, null,  [
                         'errors' => [
                             'restricted' => [
-                                !empty($customMessage) ? esc_html($customMessage) : esc_html($defaultMessage),
+                                !empty($customMessage) ? fluentform_sanitize_html($customMessage) : fluentform_sanitize_html($defaultMessage),
                             ],
                         ],
                     ]);
@@ -879,7 +879,7 @@ class FormValidationService
         throw new ValidationException('', 422, null,  [
             'errors' => [
                 'restricted' => [
-                    esc_html($message)
+                    fluentform_sanitize_html($message)
                 ],
             ],
         ]);

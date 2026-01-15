@@ -276,19 +276,11 @@ class FormHandler
         );
 
         if ('samePage' == $confirmation['redirectTo']) {
-    
-            $confirmation['messageToShow'] = apply_filters_deprecated(
-                'fluentform_submission_message_parse',
-                [
-                    $confirmation['messageToShow'],
-                    $insertId,
-                    $formData,
-                    $form
-                ],
-                FLUENTFORM_FRAMEWORK_UPGRADE,
-                'fluentform/submission_message_parse',
-                'Use fluentform/submission_message_parse instead of fluentform_submission_message_parse.'
-            );
+            
+            $confirmation['messageToShow'] = fluentform_sanitize_html($confirmation['messageToShow']);
+            
+            $confirmation['messageToShow'] = do_shortcode($confirmation['messageToShow']);
+            
             $confirmation['messageToShow'] = apply_filters('fluentform/submission_message_parse',
                 $confirmation['messageToShow'], $insertId, $formData, $form);
 
@@ -304,7 +296,7 @@ class FormHandler
             $message = $message ? $message : 'The form has been successfully submitted.';
 
             $returnData = [
-                'message' => do_shortcode($message),
+                'message' => $message,
                 'action'  => $confirmation['samePageFormBehavior'],
             ];
         } else {
@@ -1004,7 +996,7 @@ class FormHandler
             $maxSubmissionCount = apply_filters('fluentform/max_submission_count', 5, $this->form->id);
             $minSubmissionInterval = apply_filters('fluentform/min_submission_interval', 30, $this->form->id);
 
-            $interval = gmdate('Y-m-d H:i:s', strtotime(current_time('mysql')) - $minSubmissionInterval);
+            $interval = date('Y-m-d H:i:s', strtotime(current_time('mysql')) - $minSubmissionInterval);
 
             $clientIp = sanitize_text_field($this->app->request->getIp());
             $submissionCount = wpFluent()->table('fluentform_submissions')

@@ -1,11 +1,72 @@
 {
   "$schema": "https://schemas.wp.org/trunk/theme.json",
   "version": 3,
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "name": "Muted Text",
+          "slug": "ovl-muted",
+          "color": "rgba(51,51,51,0.62)"
+        },
+        {
+          "name": "Box Background",
+          "slug": "ovl-box",
+          "color": "rgba(7,18,30,0.04)"
+        },
+        {
+          "name": "Accent Box Background",
+          "slug": "ovl-box-accent",
+          "color": "rgba(11,183,192,0.08)"
+        }
+      ]
+    },
+    "typography": {
+      "fluid": true
+    }
+  },
   "customTemplates": [
     {
       "name": "property-archive",
       "title": "Property Archive Page",
-      "postTypes": ["page"]
+      "postTypes": [
+        "page"
+      ]
+    },
+    {
+      "name": "investment",
+      "title": "Investment Page",
+      "postTypes": [
+        "page"
+      ]
+    },
+    {
+      "name": "page-profile",
+      "title": "Profile Page",
+      "postTypes": [
+        "page"
+      ]
+    },
+    {
+      "name": "property-card",
+      "title": "Property Card (Latest 3)",
+      "postTypes": [
+        "page"
+      ]
+    },
+    {
+      "name": "post-list",
+      "title": "投稿一覧（カード）",
+      "postTypes": [
+        "page"
+      ]
+    }
+  ],
+  "templateParts": [
+    {
+      "name": "property-card",
+      "title": "Property Card Section",
+      "area": "uncategorized"
     }
   ]
 }

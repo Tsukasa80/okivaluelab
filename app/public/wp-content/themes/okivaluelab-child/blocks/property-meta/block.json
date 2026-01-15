@@ -1,0 +1,32 @@
+{
+  "apiVersion": 3,
+  "name": "okivaluelab/property-meta",
+  "title": "Property Meta",
+  "textdomain": "okivaluelab-child",
+  "category": "widgets",
+  "icon": "chart-bar",
+  "description": "Displays property meta such as price or yield inside query loops.",
+  "keywords": ["property", "meta", "price", "yield"],
+  "supports": {
+    "html": false,
+    "align": false
+  },
+  "usesContext": ["postId", "postType"],
+  "attributes": {
+    "variant": {
+      "type": "string",
+      "default": "price"
+    },
+    "label": {
+      "type": "string",
+      "default": ""
+    },
+    "yieldFields": {
+      "type": "string",
+      "default": "yield_gross,yield_surface,yield_real,yield_actual"
+    }
+  },
+  "editorScript": "file:./editor.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

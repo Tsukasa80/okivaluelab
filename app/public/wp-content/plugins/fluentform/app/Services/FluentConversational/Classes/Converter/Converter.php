@@ -304,10 +304,12 @@ class Converter
                 $question['options'] = self::getAdvancedOptions($field, $form);
                 $question['multiple'] = true;
                 $question = static::hasPictureMode($field, $question);
+                $question = static::maybeAddOtherOption($field, $question);
             } elseif ('input_radio' === $field['element']) {
                 $question['options'] = self::getAdvancedOptions($field, $form);
                 $question['nextStepOnAnswer'] = true;
                 $question = static::hasPictureMode($field, $question);
+                $question = static::maybeAddOtherOption($field, $question);
             } elseif ('custom_html' === $field['element']) {
                 $question['content'] = self::getComponent()->replaceEditorSmartCodes(ArrayHelper::get($field, 'settings.html_codes', ''), $form);
             } elseif ('section_break' === $field['element']) {
@@ -424,7 +426,7 @@ class Converter
                     'pen_color'        => ArrayHelper::get($field, 'settings.sign_pen_color', '#333'),
                     'pen_size'         => ArrayHelper::get($field, 'settings.sign_pen_size', 2),
                     'pad_height'       => ArrayHelper::get($field, 'settings.sign_pad_height', 200),
-                    'instruction'      => self::getComponent()->replaceEditorSmartCodes(ArrayHelper::get($field, 'settings.sign_instruction', __('Sign Here', 'fluentform-signature')), $form),
+                    'instruction'      => self::getComponent()->replaceEditorSmartCodes(ArrayHelper::get($field, 'settings.sign_instruction', __('Sign Here', 'fluentform')), $form),
                 ];
                 $question['multiple'] = false;
                 
@@ -977,6 +979,12 @@ class Converter
             'nationalMode'     => true,
             'autoPlaceholder'  => 'aggressive',
             'formatOnDisplay'  => true,
+            'validationNumberTypes' => [
+                'MOBILE',
+                'FIXED_LINE_OR_MOBILE',
+                'FIXED_LINE',
+                'TOLL_FREE',
+            ]
         ];
         
         if ($geoLocate) {
@@ -1186,6 +1194,27 @@ class Converter
         }
         
         return $options;
+    }
+
+    private static function maybeAddOtherOption($field, $question)
+    {
+        // Add "Other" option if enabled
+        $enableOtherOption = ArrayHelper::get($field, 'settings.enable_other_option') === 'yes';
+        $attributeType = ArrayHelper::get($field, 'attributes.type');
+        if ($enableOtherOption && in_array($attributeType, ['checkbox', 'radio']) && Helper::hasPro()) {
+            $otherLabel = ArrayHelper::get($field, 'settings.other_option_label', __('Other', 'fluentform'));
+            $placeholder = ArrayHelper::get($field, 'settings.other_option_placeholder', __('Please specify', 'fluentform'));
+            $fieldName = sanitize_text_field(str_replace(['[', ']'], '', ArrayHelper::get($field, 'attributes.name', '')));
+            $otherValue = '__ff_other_' . $fieldName . '__';
+            $otherInputName = $fieldName . '__ff_other_input__';
+            $question['allowOther'] = true;
+            $question['otherValue'] = $otherValue;
+            $question['otherInputLabel'] = $otherLabel;
+            $question['otherInputPlaceholder'] = $placeholder;
+            $question['otherInputName'] = $otherInputName;
+            $question['otherInputValue'] = '';
+        }
+        return $question;
     }
     
     private static function hasFormula($question)

@@ -101,75 +101,75 @@ class AvailableOptions
         return [
             [
                 'key' => 'paper_size',
-                'label' => __('Paper size', 'fluentform-pdf'),
+                'label' => __('Paper size', 'fluentforms-pdf'),
                 'component' => 'dropdown',
                 'tab' => 'tab2',
-                'tips' => __('select a pdf paper size', 'fluentform-pdf'),
+                'tips' => __('select a pdf paper size', 'fluentforms-pdf'),
                 'options' => self::getPaperSizes()
             ],
             [
                 'key' => 'orientation',
-                'label' => __('Orientation', 'fluentform-pdf'),
+                'label' => __('Orientation', 'fluentforms-pdf'),
                 'tab' => 'tab2',
                 'component' => 'dropdown',
                 'options' => self::getOrientations()
             ],
             [
                 'key' => 'font',
-                'label' => __('Font family', 'fluentform-pdf'),
+                'label' => __('Font family', 'fluentforms-pdf'),
                 'component' => 'dropdown',
                 'tab' => 'tab2',
                 'options' => self::getFonts()
             ],
             [
                 'key' => 'font_size',
-                'label' => __('Font size', 'fluentform-pdf'),
+                'label' => __('Font size', 'fluentforms-pdf'),
                 'tab' => 'tab2',
                 'component' => 'number'
             ],
             [
                 'key' => 'font_color',
-                'label' => __('Font color', 'fluentform-pdf'),
+                'label' => __('Font color', 'fluentforms-pdf'),
                 'tab' => 'tab2',
-                'tips' => __('The font color will use in the PDF.', 'fluentform-pdf'),
+                'tips' => __('The font color will use in the PDF.', 'fluentforms-pdf'),
                 'component' => 'color_picker'
             ],
             [
                 'key' => 'accent_color',
-                'label' => __('Accent color', 'fluentform-pdf'),
+                'label' => __('Accent color', 'fluentforms-pdf'),
                 'tab' => 'tab2',
-                'tips' => __('The accent color is used for the page, section titles and the border.', 'fluentform-pdf'),
+                'tips' => __('The accent color is used for the page, section titles and the border.', 'fluentforms-pdf'),
                 'component' => 'color_picker'
             ],
             [
                 'key' => 'entry_view',
-                'label' => __('Entry view', 'fluentform-pdf'),
+                'label' => __('Entry view', 'fluentforms-pdf'),
                 'tab' => 'tab2',
                 'component' => 'radio_choice',
                 'options' => [
-                    'I' => __('View', 'fluentform-pdf'),
-                    'D' => __('Download', 'fluentform-pdf')
+                    'I' => __('View', 'fluentforms-pdf'),
+                    'D' => __('Download', 'fluentforms-pdf')
                 ]
             ],
             [
                 'key' => 'empty_fields',
-                'label' => __('Show empty fields', 'fluentform-pdf'),
+                'label' => __('Show empty fields', 'fluentforms-pdf'),
                 'tab' => 'tab2',
                 'component' => 'radio_choice',
                 'options' => [
-                    'yes' => __('Yes', 'fluentform-pdf'),
-                    'no' => __('No', 'fluentform-pdf')
+                    'yes' => __('Yes', 'fluentforms-pdf'),
+                    'no' => __('No', 'fluentforms-pdf')
                 ]
             ],
             [
                 'key' => 'reverse_text',
-                'label' => __('Reverse text', 'fluentform-pdf'),
+                'label' => __('Reverse text', 'fluentforms-pdf'),
                 'tab' => 'tab2',
-                'tips' => __('Script like Arabic and Hebrew are written right to left.', 'fluentform-pdf'),
+                'tips' => __('Script like Arabic and Hebrew are written right to left.', 'fluentforms-pdf'),
                 'component' => 'radio_choice',
                 'options' => [
-                    'yes' => __('Yes', 'fluentform-pdf'),
-                    'no' => __('No', 'fluentform-pdf')
+                    'yes' => __('Yes', 'fluentforms-pdf'),
+                    'no' => __('No', 'fluentforms-pdf')
                 ]
             ]
         ];

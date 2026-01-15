@@ -42,10 +42,23 @@ class PaymentEntries
 
     public function getPayments()
     {
+        $request = wpFluentForm()->request;
+        $attributes = $request->all();
+        
+        // Sanitize request data
+        $sanitizeMap = [
+            'form_id'          => 'intval',
+            'per_page'         => 'intval',
+            'payment_statuses' => 'sanitize_text_field',
+            'payment_types'    => 'sanitize_text_field',
+            'payment_methods'  => 'sanitize_text_field',
+        ];
+        $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+        
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified by Acl::verify() below
-        Acl::verify('fluentform_view_payments', ArrayHelper::get($_REQUEST, 'form_id'));
+        Acl::verify('fluentform_view_payments', ArrayHelper::get($attributes, 'form_id'));
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified by Acl::verify() above
-        $perPage = isset($_REQUEST['per_page']) ? intval($_REQUEST['per_page']) : 10;
+        $perPage = ArrayHelper::get($attributes, 'per_page', 10);
         if(!$perPage) {
             $perPage = 10;
         }
@@ -69,26 +82,22 @@ class PaymentEntries
             ->join('fluentform_forms', 'fluentform_forms.id', '=', 'fluentform_transactions.form_id')
             ->orderBy('fluentform_transactions.id', 'DESC');
 
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified by Acl::verify() at line 46
-        if ($selectedFormId = ArrayHelper::get($_REQUEST, 'form_id')) {
-            $paymentsQuery = $paymentsQuery->where('fluentform_transactions.form_id', intval($selectedFormId));
+        if ($selectedFormId = ArrayHelper::get($attributes, 'form_id')) {
+            $paymentsQuery = $paymentsQuery->where('fluentform_transactions.form_id', $selectedFormId);
         }
 
         $allowFormIds = apply_filters('fluentform/current_user_allowed_forms', false);
         if ($allowFormIds && is_array($allowFormIds)) {
             $paymentsQuery = $paymentsQuery->whereIn('fluentform_transactions.form_id', $allowFormIds);
         }
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified by Acl::verify() at line 46
-        if ($paymentStatus = ArrayHelper::get($_REQUEST, 'payment_statuses')) {
-            $paymentsQuery = $paymentsQuery->where('fluentform_transactions.status', sanitize_text_field($paymentStatus));
+        if ($paymentStatus = ArrayHelper::get($attributes, 'payment_statuses')) {
+            $paymentsQuery = $paymentsQuery->where('fluentform_transactions.status', $paymentStatus);
         }
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified by Acl::verify() at line 46
-        if ($paymentTypes = ArrayHelper::get($_REQUEST, 'payment_types')) {
-            $paymentsQuery = $paymentsQuery->where('fluentform_transactions.transaction_type', sanitize_text_field($paymentTypes));
+        if ($paymentTypes = ArrayHelper::get($attributes, 'payment_types')) {
+            $paymentsQuery = $paymentsQuery->where('fluentform_transactions.transaction_type', $paymentTypes);
         }
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified by Acl::verify() at line 46
-        if ($paymentMethods = ArrayHelper::get($_REQUEST, 'payment_methods')) {
-            $paymentsQuery = $paymentsQuery->where('fluentform_transactions.payment_method', sanitize_text_field($paymentMethods));
+        if ($paymentMethods = ArrayHelper::get($attributes, 'payment_methods')) {
+            $paymentsQuery = $paymentsQuery->where('fluentform_transactions.payment_method', $paymentMethods);
         }
         $paymentsPaginate = $paymentsQuery->paginate($perPage);
 
@@ -114,10 +123,22 @@ class PaymentEntries
     {
         Acl::verify('fluentform_forms_manager');
 
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified in route registration, data sanitized below
-        $entries    = isset($_REQUEST['entries']) ? wp_unslash($_REQUEST['entries']) : [];
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in route registration
-        $actionType = isset($_REQUEST['action_type']) ? sanitize_text_field(wp_unslash($_REQUEST['action_type'])) : '';
+        $request = wpFluentForm()->request;
+        $attributes = $request->all();
+        
+        $sanitizeMap = [
+            'entries' => function($value) {
+                if (is_array($value)) {
+                    return array_map('intval', $value);
+                }
+                return [];
+            },
+            'action_type' => 'sanitize_text_field',
+        ];
+        $attributes = fluentform_backend_sanitizer($attributes, $sanitizeMap);
+        
+        $entries = ArrayHelper::get($attributes, 'entries', []);
+        $actionType = ArrayHelper::get($attributes, 'action_type');
         if (!$actionType || !count($entries)) {
             wp_send_json_error([
                 'message' => __('Please select entries & action first', 'fluentform')

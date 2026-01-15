@@ -1041,7 +1041,7 @@ class Component
             return false;
         }
 
-        $weekDayToday = wp_date('l');   //day of the week
+        $weekDayToday = date('l');   //day of the week
         $selectedWeekDays = ArrayHelper::get($restrictions, 'selectedDays');
         //skip if it was not set initially and $selectedWeekDays is null
         if ($selectedWeekDays && is_array($selectedWeekDays) && !in_array($weekDayToday, $selectedWeekDays)) {
@@ -1322,14 +1322,14 @@ class Component
                 } else {
                     $dateFormat = get_option('date_format') . ' ' . get_option('time_format');
                 }
-                return wp_date($dateFormat, strtotime($form->created_at));
+                return date($dateFormat, strtotime($form->created_at));
             } elseif ('updated_at' == $atts['info']) {
                 if ($atts['date_format']) {
                     $dateFormat = $atts['date_format'];
                 } else {
                     $dateFormat = get_option('date_format') . ' ' . get_option('time_format');
                 }
-                return wp_date($dateFormat, strtotime($form->updated_at));
+                return date($dateFormat, strtotime($form->updated_at));
             } elseif ('payment_total' == $atts['info']) {
                 if (!defined('FLUENTFORMPRO')) {
                     return '';

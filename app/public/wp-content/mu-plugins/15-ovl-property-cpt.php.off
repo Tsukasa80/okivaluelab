@@ -1,0 +1,79 @@
+<?php
+/**
+ * Plugin Name: OVL Property CPT
+ * Description: Registers the property custom post type and its taxonomies.
+ */
+
+add_action(
+	'init',
+	static function () {
+		register_post_type(
+			'property',
+			[
+				'label'               => '物件',
+				'labels'              => [
+					'name'          => '物件',
+					'singular_name' => '物件',
+					'add_new_item'  => '新規物件を追加',
+					'edit_item'     => '物件を編集',
+					'all_items'     => '物件一覧',
+				],
+				'public'              => true,
+				'publicly_queryable'  => true,
+				'has_archive'         => false,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_rest'        => true,
+				'menu_position'       => 20,
+				'menu_icon'           => 'dashicons-building',
+				'supports'            => [ 'title', 'editor', 'excerpt', 'thumbnail' ],
+				'rewrite'             => [
+					'slug'       => 'property',
+					'with_front' => false,
+				],
+				'capability_type'     => 'post',
+				'map_meta_cap'        => true,
+			]
+		);
+
+		register_taxonomy(
+			'property_cat',
+			'property',
+			[
+				'label'             => '物件カテゴリ',
+				'labels'            => [
+					'name'          => '物件カテゴリ',
+					'singular_name' => '物件カテゴリ',
+				],
+				'hierarchical'      => true,
+				'show_admin_column' => true,
+				'show_in_rest'      => true,
+				'rewrite'           => [
+					'slug'         => 'property-cat',
+					'with_front'   => false,
+					'hierarchical' => true,
+				],
+			]
+		);
+
+		register_taxonomy(
+			'property_tag',
+			'property',
+			[
+				'label'             => '物件タグ',
+				'labels'            => [
+					'name'          => '物件タグ',
+					'singular_name' => '物件タグ',
+				],
+				'hierarchical'      => false,
+				'show_admin_column' => true,
+				'show_in_rest'      => true,
+				'rewrite'           => [
+					'slug'       => 'property-tag',
+					'with_front' => false,
+				],
+			]
+		);
+	},
+	0
+);

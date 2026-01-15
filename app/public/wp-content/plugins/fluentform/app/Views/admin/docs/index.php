@@ -168,7 +168,7 @@
                                 <p class="text mb-4">
                                     <?php esc_html_e('We have a strong community where we discuss ideas and help each other.', 'fluentform') ?>
                                 </p>
-                                <a target="_blank" class="el-button el-button--blue el-button--soft" href="https://www.facebook.com/groups/fluentforms/">
+                                <a target="_blank" class="el-button el-button--blue el-button--soft" href="https://community.wpmanageninja.com">
                                     <?php esc_html_e('Join community', 'fluentform') ?>
                                 </a>
                             </div>

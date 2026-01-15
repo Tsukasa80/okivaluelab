@@ -6,3 +6,5 @@
 /logs/
 /tools/
 /.vscode/
+sftp.json
+tmp.txt

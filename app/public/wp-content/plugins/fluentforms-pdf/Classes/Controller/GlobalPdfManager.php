@@ -49,7 +49,8 @@ class GlobalPdfManager
 
         add_action('admin_notices', function () {
             if (!get_option($this->optionKey) && Acl::hasAnyFormPermission())
-                echo fluentform_sanitize_html('<div class="notice notice-warning"><p>' . __('Fluent Forms PDF require to download fonts. Please ', 'fluentform-pdf') . '<a href="' . admin_url('admin.php?page=fluent_forms_add_ons&sub_page=fluentform_pdf') . '">' . __('click here', 'fluentform-pdf') . '</a>' . __(' to download and configure the settings', 'fluentform-pdf') . '</p></div>');
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fluentform_sanitize_html() escapes output
+                echo fluentform_sanitize_html('<div class="notice notice-warning"><p>' . esc_html__('Fluent Forms PDF require to download fonts. Please ', 'fluentforms-pdf') . '<a href="' . admin_url('admin.php?page=fluent_forms_add_ons&sub_page=fluentform_pdf') . '">' . esc_html__('click here', 'fluentforms-pdf') . '</a>' . esc_html__(' to download and configure the settings', 'fluentforms-pdf') . '</p></div>');
         });
 
         add_filter('fluentform/pdf_body_parse', function($content, $entryId, $formData, $form){
@@ -99,7 +100,7 @@ class GlobalPdfManager
     {
         $setting["pdf_settings"] = [
             "hash" => "pdf_settings",
-            "title" => __("PDF Settings", 'fluentform-pdf')
+            "title" => __("PDF Settings", 'fluentforms-pdf')
         ];
 
         return $setting;
@@ -108,7 +109,7 @@ class GlobalPdfManager
     public function formSettingsMenu($settingsMenus)
     {
         $settingsMenus['pdf'] = [
-            'title' => __('PDF Feeds', 'fluentform-pdf'),
+            'title' => __('PDF Feeds', 'fluentforms-pdf'),
             'slug' => 'pdf-feeds',
             'hash' => 'pdf',
             'route' => '/pdf-feeds'
@@ -131,12 +132,11 @@ class GlobalPdfManager
             'download_pdf' => 'getPdf',
             'downloadFonts' => 'downloadFonts'
         ];
-
-        $route = sanitize_text_field($_REQUEST['route']);
-
         Acl::verify('fluentform_forms_manager');
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified in Acl::verify
+        $route = isset($_REQUEST['route']) ? sanitize_text_field(wp_unslash($_REQUEST['route'])) : '';
 
-        if (isset($maps[$route])) {
+        if ($route && isset($maps[$route])) {
             $this->{$maps[$route]}();
         }
     }
@@ -173,7 +173,8 @@ class GlobalPdfManager
 
     public function saveGlobalSettings()
     {
-        $settings = wp_unslash($_REQUEST['settings']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified in previous function
+        $settings = isset($_REQUEST['settings']) ? wp_unslash($_REQUEST['settings']) : [];
 
         $sanitizerMap = [
             'accent_color'       => 'sanitize_text_field',
@@ -189,13 +190,20 @@ class GlobalPdfManager
 
         update_option($this->optionKey, $settings);
         wp_send_json_success([
-            'message' => __('Settings successfully updated', 'fluentform-pdf')
+            'message' => __('Settings successfully updated', 'fluentforms-pdf')
         ], 200);
     }
 
     public function getFeedsAjax()
     {
-        $formId = intval($_REQUEST['form_id']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $formId = isset($_REQUEST['form_id']) ? intval($_REQUEST['form_id']) : 0;
+
+        if (!$formId) {
+            wp_send_json_error([
+                'message' => __('Sorry! No form found!', 'fluentforms-pdf')
+            ], 423);
+        }
 
         $form = wpFluent()->table('fluentform_forms')
             ->where('id', $formId)
@@ -212,7 +220,13 @@ class GlobalPdfManager
 
     public function getFeedListAjax()
     {
-        $formId = intval($_REQUEST['form_id']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $formId = isset($_REQUEST['form_id']) ? intval($_REQUEST['form_id']): 0;
+        if (!$formId) {
+            wp_send_json_error([
+                'message' => __('Sorry! No form found!', 'fluentforms-pdf')
+            ], 423);
+        }
 
         $feeds = $this->getFeeds($formId);
 
@@ -232,8 +246,16 @@ class GlobalPdfManager
 
     public function createFeedAjax()
     {
-        $templateName = sanitize_text_field($_REQUEST['template']);
-        $formId = intval($_REQUEST['form_id']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $templateName = sanitize_text_field(isset($_REQUEST['template']) ? wp_unslash($_REQUEST['template']) : '');
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $formId =  isset($_REQUEST['form_id']) ? intval($_REQUEST['form_id']) : 0;
+
+        if (!$formId) {
+            wp_send_json_error([
+                'message' => __('Sorry! No form found!', 'fluentforms-pdf')
+            ], 423);
+        }
 
         $form = wpFluent()->table('fluentform_forms')
             ->where('id', $formId)
@@ -243,7 +265,7 @@ class GlobalPdfManager
 
         if (!isset($templates[$templateName]) || !$formId) {
             wp_send_json_error([
-                'message' => __('Sorry! No template found!', 'fluentform-pdf')
+                'message' => __('Sorry! No template found!', 'fluentforms-pdf')
             ], 423);
         }
 
@@ -252,7 +274,7 @@ class GlobalPdfManager
         $class = $template['class'];
         if (!class_exists($class)) {
             wp_send_json_error([
-                'message' => __('Sorry! No template Class found!', 'fluentform-pdf')
+                'message' => __('Sorry! No template Class found!', 'fluentforms-pdf')
             ], 423);
         }
         $instance = new $class($this->app);
@@ -275,14 +297,14 @@ class GlobalPdfManager
 
         $insertId = wpFluent()->table('fluentform_form_meta')
             ->insertGetId([
-                'meta_key' => '_pdf_feeds',
+                'meta_key' => '_pdf_feeds', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- This class uses custom meta table (fluentform_form_meta)
                 'form_id' => $formId,
                 'value' => wp_json_encode($data)
             ]);
 
         wp_send_json_success([
             'feed_id' => $insertId,
-            'message' => __('Feed has been created, edit the feed now')
+            'message' => esc_html__('Feed has been created, edit the feed now', 'fluentforms-pdf')
         ], 200);
     }
 
@@ -304,13 +326,25 @@ class GlobalPdfManager
 
     public function getFeedAjax()
     {
-        $formId = intval($_REQUEST['form_id']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $formId = isset($_REQUEST['form_id']) ? intval($_REQUEST['form_id']) : 0;
+        if (!$formId) {
+            wp_send_json_error([
+                'message' => __('Sorry! No form found!', 'fluentforms-pdf')
+            ], 423);
+        }
 
         $form = wpFluent()->table('fluentform_forms')
             ->where('id', $formId)
             ->first();
 
-        $feedId = intval($_REQUEST['feed_id']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $feedId = isset($_REQUEST['feed_id']) ? intval($_REQUEST['feed_id']) : 0;
+        if (!$feedId) {
+            wp_send_json_error([
+                'message' => __('Sorry! No feed found!', 'fluentforms-pdf')
+            ], 423);
+        }
 
         $feed = wpFluent()->table('fluentform_form_meta')
             ->where('id', $feedId)
@@ -327,7 +361,7 @@ class GlobalPdfManager
 
         if (!isset($templates[$templateName]) || !$formId) {
             wp_send_json_error([
-                'message' => __('Sorry! No template found!', 'fluentform-pdf')
+                'message' => __('Sorry! No template found!', 'fluentforms-pdf')
             ], 423);
         }
 
@@ -336,7 +370,7 @@ class GlobalPdfManager
         $class = $template['class'];
         if (!class_exists($class)) {
             wp_send_json_error([
-                'message' => __('Sorry! No template Class found!', 'fluentform-pdf')
+                'message' => __('Sorry! No template Class found!', 'fluentforms-pdf')
             ], 423);
         }
         $instance = new $class($this->app);
@@ -345,54 +379,54 @@ class GlobalPdfManager
 
         $globalFields['watermark_image'] = [
             'key' => 'watermark_image',
-            'label' => __('Watermark Image', 'fluentform-pdf'),
+            'label' => __('Watermark Image', 'fluentforms-pdf'),
             'component' => 'image_widget'
         ];
 
         $globalFields['watermark_text'] = [
             'key' => 'watermark_text',
-            'label' => __('Watermark Text', 'fluentform-pdf'),
+            'label' => __('Watermark Text', 'fluentforms-pdf'),
             'component' => 'text',
-            'placeholder' => __('Watermark text', 'fluentform-pdf')
+            'placeholder' => __('Watermark text', 'fluentforms-pdf')
         ];
 
         $globalFields['watermark_opacity'] = [
             'key' => 'watermark_opacity',
-            'label' => __('Watermark Opacity', 'fluentform-pdf'),
+            'label' => __('Watermark Opacity', 'fluentforms-pdf'),
             'component' => 'number',
-            'inline_tip' => __('Value should be between 1 to 100', 'fluentform-pdf')
+            'inline_tip' => __('Value should be between 1 to 100', 'fluentforms-pdf')
         ];
         $globalFields['watermark_img_behind'] = [
             'key' => 'watermark_img_behind',
-            'label' => __('Watermark Position', 'fluentform-pdf'),
+            'label' => __('Watermark Position', 'fluentforms-pdf'),
             'component' => 'checkbox-single',
-            'inline_tip' => __('Set as background', 'fluentform-pdf')
+            'inline_tip' => __('Set as background', 'fluentforms-pdf')
         ];
 
         $globalFields['security_pass'] = [
             'key' => 'security_pass',
             'label' => 'PDF Password',
             'component' => 'text',
-            'inline_tip' => __('If you want to set password please enter password otherwise leave it empty', 'fluentform-pdf')
+            'inline_tip' => __('If you want to set password please enter password otherwise leave it empty', 'fluentforms-pdf')
         ];
 
         $settingsFields = $instance->getSettingsFields();
 
         $settingsFields[] = [
             'key' => 'allow_download',
-            'label' => __('Allow Download', 'fluentform-pdf'),
-            'tips' => __('Allow this feed to be downloaded on form submission. Only logged in users will be able to download.', 'fluentform-pdf'),
+            'label' => __('Allow Download', 'fluentforms-pdf'),
+            'tips' => __('Allow this feed to be downloaded on form submission. Only logged in users will be able to download.', 'fluentforms-pdf'),
             'component' => 'radio_choice',
             'options' => [
-                true => __('Yes', 'fluentform-pdf'),
-                false => __('No', 'fluentform-pdf')
+                true => __('Yes', 'fluentforms-pdf'),
+                false => __('No', 'fluentforms-pdf')
             ]
         ];
 
         $settingsFields[] = [
             'key' => 'shortcode',
-            'label' => __('Shortcode', 'fluentform-pdf'),
-            'tips' => __('Use this shortcode on submission message to generate PDF link.', 'fluentform-pdf'),
+            'label' => __('Shortcode', 'fluentforms-pdf'),
+            'tips' => __('Use this shortcode on submission message to generate PDF link.', 'fluentforms-pdf'),
             'component' => 'text',
             'readonly' => true
         ];
@@ -408,18 +442,26 @@ class GlobalPdfManager
 
     public function saveFeedAjax()
     {
-        $formId = intval($_REQUEST['form_id']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $formId = isset($_REQUEST['form_id']) ? intval($_REQUEST['form_id']) : 0;
+        if (!$formId) {
+            wp_send_json_error([
+                'message' => __('Sorry! No form found!', 'fluentforms-pdf')
+            ], 423);
+        }
 
         $form = wpFluent()->table('fluentform_forms')
             ->where('id', $formId)
             ->first();
 
-        $feedId = intval($_REQUEST['feed_id']);
-        $feed = wp_unslash($_REQUEST['feed']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $feedId = isset($_REQUEST['feed_id']) ? intval($_REQUEST['feed_id']) : 0;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified previously
+        $feed = isset($_REQUEST['feed']) ? wp_unslash($_REQUEST['feed']) : [];
 
         if (empty($feed['name'])) {
             wp_send_json_error([
-                'message' => __('Feed name is required', 'fluentform-pdf')
+                'message' => __('Feed name is required', 'fluentforms-pdf')
             ], 423);
         }
 
@@ -448,21 +490,27 @@ class GlobalPdfManager
             ]);
 
         wp_send_json_success([
-            'message' => __('Settings successfully updated', 'fluentform-pdf')
+            'message' => __('Settings successfully updated', 'fluentforms-pdf')
         ], 200);
 
     }
 
     public function deleteFeedAjax()
     {
-        $feedId = intval($_REQUEST['feed_id']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $feedId = isset($_REQUEST['feed_id']) ? intval($_REQUEST['feed_id']) : 0;
+        if (!$feedId) {
+            wp_send_json_error([
+                'message' => __('Sorry! No feed found!', 'fluentforms-pdf')
+            ], 423);
+        }
         wpFluent()->table('fluentform_form_meta')
             ->where('id', $feedId)
             ->where('meta_key', '_pdf_feeds')
             ->delete();
 
         wp_send_json_success([
-            'message' => __('Feed successfully deleted', 'fluentform-pdf')
+            'message' => __('Feed successfully deleted', 'fluentforms-pdf')
         ], 200);
 
     }
@@ -516,54 +564,54 @@ class GlobalPdfManager
         return [
             [
                 'key' => 'paper_size',
-                'label' => __('Paper size', 'fluentform-pdf'),
+                'label' => __('Paper size', 'fluentforms-pdf'),
                 'component' => 'dropdown',
-                'tips' => __('All available templates are shown here, select a default template', 'fluentform-pdf'),
+                'tips' => __('All available templates are shown here, select a default template', 'fluentforms-pdf'),
                 'options' => AvailableOptions::getPaperSizes()
             ],
             [
                 'key' => 'orientation',
-                'label' => __('Orientation', 'fluentform-pdf'),
+                'label' => __('Orientation', 'fluentforms-pdf'),
                 'component' => 'dropdown',
                 'options' => AvailableOptions::getOrientations()
             ],
             [
                 'key' => 'font_family',
-                'label' => __('Font Family', 'fluentform-pdf'),
+                'label' => __('Font Family', 'fluentforms-pdf'),
                 'component' => 'dropdown-group',
-                'placeholder' => __('Select Font', 'fluentform-pdf'),
+                'placeholder' => __('Select Font', 'fluentforms-pdf'),
                 'options' => AvailableOptions::getInstalledFonts()
             ],
             [
                 'key' => 'font_size',
-                'label' => __('Font size', 'fluentform-pdf'),
+                'label' => __('Font size', 'fluentforms-pdf'),
                 'component' => 'number'
             ],
             [
                 'key' => 'font_color',
-                'label' => __('Font color', 'fluentform-pdf'),
+                'label' => __('Font color', 'fluentforms-pdf'),
                 'component' => 'color_picker'
             ],
             [
                 'key' => 'heading_color',
-                'label' => __('Heading color', 'fluentform-pdf'),
-                'tips' => __('Select Heading Color', 'fluentform-pdf'),
+                'label' => __('Heading color', 'fluentforms-pdf'),
+                'tips' => __('Select Heading Color', 'fluentforms-pdf'),
                 'component' => 'color_picker'
             ],
             [
                 'key' => 'accent_color',
-                'label' => __('Accent color', 'fluentform-pdf'),
-                'tips' => __('The accent color is used for the borders, breaks etc.', 'fluentform-pdf'),
+                'label' => __('Accent color', 'fluentforms-pdf'),
+                'tips' => __('The accent color is used for the borders, breaks etc.', 'fluentforms-pdf'),
                 'component' => 'color_picker'
             ],
             [
                 'key' => 'language_direction',
-                'label' => __('Language Direction', 'fluentform-pdf'),
-                'tips' => __('Script like Arabic and Hebrew are written right to left. For Arabic/Hebrew please select RTL', 'fluentform-pdf'),
+                'label' => __('Language Direction', 'fluentforms-pdf'),
+                'tips' => __('Script like Arabic and Hebrew are written right to left. For Arabic/Hebrew please select RTL', 'fluentforms-pdf'),
                 'component' => 'radio_choice',
                 'options' => [
-                    'ltr' => __('LTR', 'fluentform-pdf'),
-                    'rtl' => __('RTL', 'fluentform-pdf')
+                    'ltr' => __('LTR', 'fluentforms-pdf'),
+                    'rtl' => __('RTL', 'fluentforms-pdf')
                 ]
             ]
         ];
@@ -571,13 +619,31 @@ class GlobalPdfManager
 
     public function pushPdfButtons($widgets, $data, $submission)
     {
-        $formId = $submission->form->id;
+        $formId = $submission->form_id;
+        if (!$formId) {
+            return $widgets;
+        }
+        
+        if (
+            isset($submission->type) &&
+            (
+                $submission->type === 'step_data'||
+                $submission->type === 'saved_state_data'
+            )
+        ) {
+            return $widgets;
+        }
+        
+        if (!isset($submission->serial_number)) {
+            return $widgets;
+        }
+        
         $feeds = $this->getFeeds($formId);
         if (!$feeds) {
             return $widgets;
         }
         $widgetData = [
-            'title' => __('PDF Downloads', 'fluentform-pdf'),
+            'title' => __('PDF Downloads', 'fluentforms-pdf'),
             'type' => 'html_content'
         ];
 
@@ -614,8 +680,13 @@ class GlobalPdfManager
     */
     public function getPdf()
     {
-        $feedId = intval($_REQUEST['id']);
-        $submissionId = intval($_REQUEST['submission_id']);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $feedId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+        $submissionId = isset($_REQUEST['submission_id']) ? intval($_REQUEST['submission_id']) : 0;
+        if (!$feedId || !$submissionId) {
+            die(esc_html__('Sorry! No feed found', 'fluentforms-pdf'));
+        }
         $feed = wpFluent()->table('fluentform_form_meta')
             ->where('id', $feedId)
             ->where('meta_key', '_pdf_feeds')
@@ -634,14 +705,14 @@ class GlobalPdfManager
         $templates = $this->getAvailableTemplates($form);
 
         if (!isset($templates[$templateName])) {
-            die(__('Sorry! No template found', 'fluentform-pdf'));
+            die(esc_html__('Sorry! No template found', 'fluentforms-pdf'));
         }
 
         $template = $templates[$templateName];
 
         $class = $template['class'];
         if (!class_exists($class)) {
-            die(__('Sorry! No template class found', 'fluentform-pdf'));
+            die(esc_html__('Sorry! No template class found', 'fluentforms-pdf'));
         }
 
         $instance = new $class($this->app);
@@ -739,7 +810,7 @@ class GlobalPdfManager
             $downloadedFiles[] = $fontName;
             if (is_wp_error($res)) {
                 wp_send_json_error([
-                    'message' => __('Font Download failed. Please reload and try again', 'fluentform-pdf')
+                    'message' => __('Font Download failed. Please reload and try again', 'fluentforms-pdf')
                 ], 423);
             }
         }
@@ -759,23 +830,23 @@ class GlobalPdfManager
         $extensions = [
             'mbstring' => [
                 'status' => $mbString,
-                'label' => ($mbString) ? __('MBString is enabled', 'fluentform-pdf') : __('The PHP Extension MB String could not be detected. Contact your web hosting provider to fix.', 'fluentform-pdf')
+                'label' => ($mbString) ? __('MBString is enabled', 'fluentforms-pdf') : __('The PHP Extension MB String could not be detected. Contact your web hosting provider to fix.', 'fluentforms-pdf')
             ],
             'mb_regex_encoding' => [
                 'status' => $mbRegex,
-                'label' => ($mbRegex) ? __('MBString Regex is enabled', 'fluentform-pdf') : __('The PHP Extension MB String does not have MB Regex enabled. Contact your web hosting provider to fix.', 'fluentform-pdf')
+                'label' => ($mbRegex) ? __('MBString Regex is enabled', 'fluentforms-pdf') : __('The PHP Extension MB String does not have MB Regex enabled. Contact your web hosting provider to fix.', 'fluentforms-pdf')
             ],
             'gd' => [
                 'status' => $gd,
-                'label' => ($gd) ? __('GD Library is enabled', 'fluentform-pdf') : __('The PHP Extension GD Image Library could not be detected. Contact your web hosting provider to fix.', 'fluentform-pdf')
+                'label' => ($gd) ? __('GD Library is enabled', 'fluentforms-pdf') : __('The PHP Extension GD Image Library could not be detected. Contact your web hosting provider to fix.', 'fluentforms-pdf')
             ],
             'dom' => [
                 'status' => $dom,
-                'label' => ($dom) ? __('PHP Dom is enabled', 'fluentform-pdf') : __('The PHP DOM Extension was not found. Contact your web hosting provider to fix.', 'fluentform-pdf')
+                'label' => ($dom) ? __('PHP Dom is enabled', 'fluentforms-pdf') : __('The PHP DOM Extension was not found. Contact your web hosting provider to fix.', 'fluentforms-pdf')
             ],
             'libXml' => [
                 'status' => $libXml,
-                'label' => ($libXml) ? __('LibXml is OK', 'fluentform-pdf') : __('The PHP Extension libxml could not be detected. Contact your web hosting provider to fix', 'fluentform-pdf')
+                'label' => ($libXml) ? __('LibXml is OK', 'fluentforms-pdf') : __('The PHP Extension libxml could not be detected. Contact your web hosting provider to fix', 'fluentforms-pdf')
             ]
         ];
 
@@ -812,7 +883,7 @@ class GlobalPdfManager
 
                         if ($file->isReadable() && $file->getMTime() < $max_file_age) {
                             if (!$file->isDir()) {
-                                unlink($file);
+                                wp_delete_file($file);
                             }
                         }
                     }
@@ -841,7 +912,7 @@ class GlobalPdfManager
         }
         
         $shortCodes[] = [
-            'title' => __('PDF', 'fluentform-pdf'),
+            'title' => __('PDF', 'fluentforms-pdf'),
             'shortcodes' => $feedShortCodes
         ];
 
@@ -884,7 +955,7 @@ class GlobalPdfManager
         Acl::verifyNonce();
 
         if (!is_user_logged_in()) {
-            $message = __('Sorry! You have to login first.', 'fluentform-pdf');
+            $message = __('Sorry! You have to login first.', 'fluentforms-pdf');
             
             wp_send_json_error([
                 'message' => $message
@@ -894,15 +965,18 @@ class GlobalPdfManager
         $hasPermission = Acl::hasPermission('fluentform_entries_viewer');
 
         if (!$hasPermission) {
-            $submissionId = intval($_REQUEST['submission_id']);
-
-            $submission = wpFluent()->table('fluentform_submissions')
-                                    ->where('id', $submissionId)
-                                    ->where('user_id', get_current_user_id())
-                                    ->first();
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified previously
+            $submissionId = isset($_REQUEST['submission_id']) ? intval($_REQUEST['submission_id']) : 0;
+            $submission = null;
+            if ($submissionId) {
+                $submission = wpFluent()->table('fluentform_submissions')
+                    ->where('id', $submissionId)
+                    ->where('user_id', get_current_user_id())
+                    ->first();
+            }
 
             if (!$submission) {
-                $message = __("You don't have permission to download the PDF.", 'fluentform-pdf');
+                $message = __("You don't have permission to download the PDF.", 'fluentforms-pdf');
                 
                 wp_send_json_error([
                     'message' => $message
@@ -934,8 +1008,10 @@ class GlobalPdfManager
 
     public function downloadPublic()
     {
-        $feedId = intval(Protector::decrypt(base64_decode($_REQUEST['id'])));
-        $submissionId = intval(Protector::decrypt(base64_decode($_REQUEST['submission_id'])));
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified previously
+        $feedId = isset($_REQUEST['id']) ? intval(Protector::decrypt(base64_decode($_REQUEST['id']))) : 0;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified previously
+        $submissionId = isset($_REQUEST['submission_id']) ? intval(Protector::decrypt(base64_decode($_REQUEST['submission_id']))) : 0;
 
         $_REQUEST['id'] = $feedId;
         $_REQUEST['submission_id'] = $submissionId;

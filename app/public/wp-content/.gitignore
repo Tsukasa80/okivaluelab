@@ -1,0 +1,24 @@
+# WordPress core/content that should not be versioned.
+/uploads/
+/upgrade/
+/upgrade-temp-backup/
+/ai1wm-backups/
+/debug.log
+/cache/
+/wflogs/
+*.log
+
+# Keep wp-content root files and stock assets out of Git.
+/index.php
+/languages/
+/plugins/
+/themes/*
+!/themes/okivaluelab-child/
+
+# OS/editor artifacts.
+.DS_Store
+Thumbs.db
+*.swp
+
+# Local deploy settings (do not commit).
+.env.deploy
